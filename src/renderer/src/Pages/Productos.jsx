@@ -89,7 +89,7 @@ const Productos = () => {
                         ubicacion && <AgregarUbicacion toggleUbicacion={toggleUbicacion}/>
                     }
                     <div className="p-4 py-6  bg-secundario text-white mt-6 rounded-lg">
-                        <div className="border border-gray-600 rounded-lg h-[557px] overflow-y-auto relative">
+                        <div className="border border-gray-600 rounded-lg h-[500px] overflow-y-auto relative">
                             <table className="w-full border-collapse">
                             <thead className="bg-gray-600 h-[40px] sticky top-0">
                                 <tr>
