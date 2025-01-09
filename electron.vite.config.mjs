@@ -15,7 +15,8 @@ export default defineConfig({
         '@renderer': resolve('src/renderer/src')
       }
     },
-    plugins: [react()]
+    plugins: [react()],
+    base:'https://marlonlupaca.github.io/Jojolete/'
   }
   
 })
