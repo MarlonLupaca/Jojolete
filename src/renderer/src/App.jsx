@@ -1,4 +1,4 @@
-import { BrowserRouter, Route, Routes } from 'react-router-dom'
+import {HashRouter, Route, Routes } from 'react-router-dom'
 import Login from './Pages/Login'
 import Registrarse from './Pages/Registrarse'
 import Home from './Pages/Home'
@@ -13,7 +13,7 @@ import Alertas from './Pages/Alertas'
 function App() {
   return (
     <>
-      <BrowserRouter>
+      <HashRouter>
         <Routes>
           <Route path="/" element={<Login />}></Route>
           <Route path="/registrarse" element={<Registrarse />}></Route>
@@ -27,7 +27,7 @@ function App() {
           <Route path='/Alertas' element={<Alertas/>}></Route>
 
         </Routes>
-    </BrowserRouter>
+    </HashRouter>
     </>
   )
 }
