@@ -3,7 +3,7 @@ import React from 'react'
 const ItemsSidebar = ({isOpen,name, Icon}) => {
     return (
         <div className="relative group text-textoGris cursor-pointer flex items-center h-[40px] px-[8px] hover:text-terceario rounded-lg">
-            <Icon className="text-[30px] py-1 h-[40px] flex-shrink-0" />
+            <Icon className="text-[28px] py-1 h-[40px] flex-shrink-0" />
             <span className={`font-[700] text-[16px] ml-[15px] overflow-hidden transition-opacity duration-300 ${isOpen ? 'opacity-100 ' : 'opacity-0'}`}>
                 {name}
             </span>

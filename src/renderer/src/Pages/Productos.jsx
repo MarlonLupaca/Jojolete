@@ -7,6 +7,7 @@ import AgregarCategoria from "../components/AgregarCategoria"
 import AgregarMedida from "../components/AgregarMedida"
 import AgregarProveedor from "../components/AgregarProveedor"
 import AgregarUbicacion from "../components/AgregarUbicacion"
+import { RxButton, RxCaretDown  } from "react-icons/rx"
 
 const Productos = () => {
 
@@ -15,6 +16,8 @@ const Productos = () => {
     const [medida, setmedida] = useState(false)
     const [proveedor, setproveedor] = useState(false)
     const [ubicacion, setubicacion] = useState(false)
+
+    const [opciones, setopciones] = useState(false)
 
     const toggleAgregar = () => {
         setagregar(!agregar)
@@ -33,6 +36,10 @@ const Productos = () => {
     }
     const toggleUbicacion = () => {
         setubicacion(!ubicacion)
+    }
+
+    const toggleOpciones = () => {
+        setopciones(!opciones)
     }
 
     return (
@@ -88,131 +95,50 @@ const Productos = () => {
                     {
                         ubicacion && <AgregarUbicacion toggleUbicacion={toggleUbicacion}/>
                     }
-                    <div className="p-4 py-6  bg-secundario text-white mt-6 rounded-lg">
-                        <div className="border border-gray-600 rounded-lg h-[500px] overflow-y-auto relative">
+                    <div className="p-4 py-6 h-[73vh]  bg-secundario text-white mt-6 rounded-lg">
+                        <div className="border border-gray-600 rounded-lg h-[100%] overflow-y-auto relative">
                             <table className="w-full border-collapse">
                             <thead className="bg-gray-600 h-[40px] sticky top-0">
                                 <tr>
-                                    <th className="w-[80px]">Cant.</th>
-                                    <th className="text-start">Descripcion</th>
-                                    <th className="text-start">Precio unit</th>
-                                    <th className="text-start">Unidad</th>
-                                    <th className="text-start">Total</th>
+                                    <th className="w-[80px]"><RxButton className="m-auto text-[25px] font-[700]"/></th>
+                                    <th className="text-start">Nombre</th>
+                                    <th className="text-start">Stock</th>
+                                    <th className="text-start">Venta</th>
+                                    <th className="text-start">Ubicacion</th>
+                                    <th className="text-start w-[150px] ">Acciones</th>
                                 </tr>
                             </thead>
                             <tbody>
-                                <tr className="border-b-2 h-[40px] border-gray-600">
+                                <tr className="border-b-2 h-[50px] border-gray-600">
                                     <td className="text-center">1</td>
                                     <td className="">Cell</td>
                                     <td className="">Cell</td>
                                     <td className="">Cell</td>
                                     <td className="">Cell</td>
+                                    <td className="">
+                                        <button className="border text-[14px] relative border-textoGris px-2 py-1 rounded-lg transition-all duration-75 hover:scale-[1.01]">
+                                            <span 
+                                                className="flex items-center gap-1" 
+                                                onClick={toggleOpciones}>Opciones <RxCaretDown /></span>
+                                            
+                                            {
+                                                opciones && <div className="bg-secundario gap-[3px] left-0 top-[100%] absolute border rounded-lg border-textoGris flex flex-col items-start p-2">
+                                                                <button>
+                                                                    Eliminar
+                                                                </button>
+                                                                <button>
+                                                                    Editar
+                                                                </button>
+                                                                <button className="text-nowrap">
+                                                                    Ver detalles
+                                                                </button>
+                                                            </div>
+                                            }
+                                            
+                                        </button>
+                                    </td>
                                 </tr>
-                                <tr className="border-b-2 h-[40px] border-gray-600">
-                                    <td className="text-center">1</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                </tr>
-                                <tr className="border-b-2 h-[40px] border-gray-600">
-                                    <td className="text-center">1</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                </tr>
-                                <tr className="border-b-2 h-[40px] border-gray-600">
-                                    <td className="text-center">1</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                </tr>
-                                <tr className="border-b-2 h-[40px] border-gray-600">
-                                    <td className="text-center">1</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                </tr>
-                                <tr className="border-b-2 h-[40px] border-gray-600">
-                                    <td className="text-center">1</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                </tr>
-                                <tr className="border-b-2 h-[40px] border-gray-600">
-                                    <td className="text-center">1</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                </tr>
-                                <tr className="border-b-2 h-[40px] border-gray-600">
-                                    <td className="text-center">1</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                </tr>
-                                <tr className="border-b-2 h-[40px] border-gray-600">
-                                    <td className="text-center">1</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                </tr>
-                                <tr className="border-b-2 h-[40px] border-gray-600">
-                                    <td className="text-center">1</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                </tr>
-                                <tr className="border-b-2 h-[40px] border-gray-600">
-                                    <td className="text-center">1</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                </tr>
-                                <tr className="border-b-2 h-[40px] border-gray-600">
-                                    <td className="text-center">1</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                </tr>
-                                <tr className="border-b-2 h-[40px] border-gray-600">
-                                    <td className="text-center">1</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                </tr>
-                                <tr className="border-b-2 h-[40px] border-gray-600">
-                                    <td className="text-center">1</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                </tr>
-                                <tr className="border-b-2 h-[40px] border-gray-600">
-                                    <td className="text-center">1</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                </tr>
-                                <tr className="border-b-2 h-[40px] border-gray-600">
-                                    <td className="text-center">1</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                    <td className="">Cell</td>
-                                </tr>
+                                
                                 
                             </tbody>
                             </table>

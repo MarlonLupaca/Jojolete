@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FaBoxes,FaAngleDoubleRight, FaRegClipboard ,FaGraduationCap, FaHome, FaExchangeAlt, FaListAlt, FaWarehouse, FaUserAlt, FaBell } from 'react-icons/fa';
+import { FaBoxes,FaAngleDoubleRight, FaRegClipboard ,FaGraduationCap, FaHome, FaExchangeAlt, FaListAlt, FaWarehouse, FaUserAlt, FaBell, FaSignOutAlt } from 'react-icons/fa';
 import { Link } from 'react-router-dom';
 import ItemsSidebar from './ItemsSidebar';
 
@@ -16,17 +16,17 @@ const Sidebar = () => {
     };
 
     return (
-        <div className={`relative flex ${isOpen ? 'w-[260px]' : 'w-20'} z-[100] h-screen bg-secundario text-textoClaro transition-all duration-300 ease-linear`}>
-            <button onClick={toggleSidebar} className="z-[100] top-2 absolute right-[-35px] h-[35px] w-[35px] bg-fondoOscuro  p-1 flex items-center justify-center rounded-lg text-[25px] text-textoGris hover:text-terceario font-semibold">
+        <div className={`relative flex ${isOpen ? 'w-[260px]' : 'w-20'} z-[100] flex flex-col justify-between h-screen bg-secundario text-textoClaro transition-all duration-300 ease-linear`}>
+            <button onClick={toggleSidebar} className="z-[100] top-[11px] absolute right-[-35px] h-[35px] w-[35px] bg-fondoOscuro  p-1 flex items-center justify-center rounded-lg text-[25px] text-textoGris hover:text-terceario font-semibold">
                 <FaAngleDoubleRight
                     className={`transition-transform duration-300 ease-linear ${isOpen ? '' : 'rotate-180'}`}
                 />
             </button>
             
             {/* Sidebar */}
-            <div className={`flex   ${isOpen?'':''} flex-col w-full p-4 pt-3 gap-6`}>
+            <div className={`flex  ${isOpen?'':''} h-fit  flex-col w-full p-4 pt-3 gap-6`}>
                 {/* Toggler */}
-                <div className="flex items-center px-[8px] ">
+                <div className="flex items-center px-[8px]">
                     <FaGraduationCap className="text-[30px] min-w-[30px] flex-shrink-0" />
                     <span className={`ml-[15px] tracking-[8px] text-[15px] overflow-hidden transition-opacity duration-300 ${isOpen ? 'opacity-100 ' : 'opacity-0'}`}>INVETARIOS</span>
                 </div>
@@ -34,7 +34,7 @@ const Sidebar = () => {
 
                 <span className={` text-[12px] tracking-wide transition-opacity duration-300  ${isOpen ? 'opacity-100 ' : 'opacity-0'}`}>NAVEGACION</span>
 
-                <nav className=' flex flex-col gap-[14px]'>
+                <nav className=' flex flex-col gap-[16px]'>
                     
                     <Link to="/home">
                         <ItemsSidebar isOpen={isOpen} name="Dashboard" Icon={FaHome} />
@@ -69,13 +69,15 @@ const Sidebar = () => {
                     </Link>
                 </nav>
 
-                {/* Footer */}
-                <div className="flex flex-col items-center mt-8 space-y-4">
-                    <button className="text-textoClaro text-sm hover:text-textoClaro transition duration-200">¿Necesitas ayuda?</button>
-                    <Link to="/">
-                        <button className="text-textoClaro text-sm hover:text-textoClaro transition duration-200">Salir</button>
-                    </Link>
-                </div>
+                
+            </div>
+            <div className="flex flex-col mb-4 items-center mt-8 space-y-4 ">
+                <Link to="/">
+                    <button className="flex items-center gap-2 text-textoGris  text-[14px] font-[700] hover:text-cuarto transition duration-200">
+                        <FaSignOutAlt size={16}/>
+                        Salir
+                    </button>
+                </Link>
             </div>
         </div>
     );

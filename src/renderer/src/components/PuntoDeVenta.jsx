@@ -9,29 +9,19 @@ const PuntoDeVenta = () => {
   ]);
 
   return (
-    <div className="p-4 flex-1">
+    <div className="p-4 flex-1 h-[90vh] ">
       <div className="w-full flex flex-col text-textoClaro rounded-lg py-4 px-5 bg-secundario h-full">
           <h4 className="text-lg font-bold mb-2">Venta</h4>
-          <div className="flex flex-col gap-3 mb-4">
-            <div>
-              <label htmlFor="cajero" className="mr-4">Cajero:</label>
-              <input
-                placeholder="Ingresa cajero..."  
-                type="text" 
-                id="cajero" 
-                className="px-3 py-1 border border-acento w-[300px] bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-terceario"/>
-            </div>
-            <div>
-              <label htmlFor="cliente" className="mr-3">Cliente:</label>
-              <input 
-                placeholder="Ingresa cliente..."
-                type="text" 
-                id="cliente" 
-                className="px-3 py-1 border border-acento w-[300px] bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-terceario"/>
-            </div>
+          <div className="mb-6">
+            <label htmlFor="cliente" className="mr-3">Cliente:</label>
+            <input 
+              placeholder="Ingresa cliente..."
+              type="text" 
+              id="cliente" 
+              className="px-3 py-1 border border-acento w-[300px] bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-terceario"/>
           </div>
 
-          <div className="border border-gray-600 rounded-t-lg  h-[385px] overflow-y-auto relative">
+          <div className="border border-gray-600 rounded-t-lg overflow-y-auto relative">
             <table className="w-full border-collapse">
               <thead className="bg-gray-600 h-[40px] sticky top-0">
                 <tr>
