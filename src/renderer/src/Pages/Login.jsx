@@ -1,11 +1,63 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
+import React, { useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import 'react-toastify/dist/ReactToastify.css';
 
 const Login = () => {
+    const [correo, setCorreo] = useState('');
+    const [contrasena, setContrasena] = useState('');
+    const [loading, setLoading] = useState(false);
+    
+    const navigate = useNavigate();
+
+    // Función para validar correo
+    const validateEmail = (email) => {
+        const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
+        return regex.test(email);
+    };
+
+    const handleLogin = async (e) => {
+        e.preventDefault();
+
+        // Validaciones de los campos
+        if (!correo || !contrasena) {
+            toast.error('Por favor, completa todos los campos.');
+            return;
+        }
+
+        if (!validateEmail(correo)) {
+            toast.error('Por favor, ingresa un correo electrónico válido.');
+            return;
+        }
+
+        setLoading(true);
+
+        try {
+            const response = await axios.post('http://localhost:8080/usuario/login', {
+                correo,
+                contrasena
+            });
+
+            // Si el login es exitoso
+            if (response.data === 'Ingreso exitoso') {
+                localStorage.setItem('token', response.data.token); // Guardar token en el almacenamiento local
+                navigate('/home'); // Redirigir al home
+                toast.success('¡Inicio de sesión exitoso!');
+            } else {
+                // Si las credenciales son incorrectas
+                toast.error('Credenciales incorrectas');
+            }
+        } catch (error) {
+            toast.error('Error al conectarse con el servidor.');
+        } finally {
+            setLoading(false);
+        }
+    };
+
     return (
         <div className="flex items-center justify-center min-h-screen bg-secundario">
             <div className="flex justify-center items-center w-[1000px] h-[500px] p-8 bg-primario rounded-2xl shadow-lg">
-
                 {/* Sección de Imagen */}
                 <div className="w-[50%] flex justify-center items-center">
                     <img src="./login.svg" alt="Ilustración de Login" className="max-w-[100%]" />
@@ -17,7 +69,7 @@ const Login = () => {
                         Iniciar Sesión
                     </h2>
 
-                    <form>
+                    <form onSubmit={handleLogin}>
                         <div className="mb-4">
                             <label htmlFor="email" className="block mb-2 text-sm font-semibold text-textoClaro">
                                 Correo Electrónico
@@ -25,6 +77,8 @@ const Login = () => {
                             <input
                                 type="email"
                                 id="email"
+                                value={correo}
+                                onChange={(e) => setCorreo(e.target.value)}
                                 className="w-full px-4 py-2 border border-acento bg-primario text-textoClaro rounded-lg focus:outline-none focus:ring-2 focus:ring-terceario"
                                 placeholder="tucorreo@ejemplo.com"
                             />
@@ -37,19 +91,20 @@ const Login = () => {
                             <input
                                 type="password"
                                 id="password"
+                                value={contrasena}
+                                onChange={(e) => setContrasena(e.target.value)}
                                 className="w-full px-4 py-2 border border-acento bg-primario text-textoClaro rounded-lg focus:outline-none focus:ring-2 focus:ring-terceario"
                                 placeholder="••••••••"
                             />
                         </div>
-                        <Link to="/home">
-                            <button
-                                type="submit"
-                                className="w-full px-4 py-2 text-white bg-terceario rounded-lg hover:bg-opacity-90 transition duration-200 focus:outline-none"
-                            >
-                                Iniciar Sesión
-                            </button>
-                        </Link>
-                        
+
+                        <button
+                            type="submit"
+                            className="w-full px-4 py-2 text-white bg-terceario rounded-lg hover:bg-opacity-90 transition duration-200 focus:outline-none"
+                            disabled={loading}
+                        >
+                            {loading ? 'Cargando...' : 'Iniciar Sesión'}
+                        </button>
                     </form>
 
                     <div className="mt-4 text-center">
@@ -58,7 +113,6 @@ const Login = () => {
                         </Link>
                     </div>
                 </div>
-
             </div>
         </div>
     );

@@ -1,14 +1,16 @@
 import { useState } from "react";
 import { FaBarcode } from "react-icons/fa";
+import axios from 'axios';
+import { toast } from 'react-toastify';  // Importa el toast para las notificaciones
 
 const AgregarProducto = ({ toggleAgregar, addProducto }) => {
-  // Estado para el formulario
+    // Estado para el formulario
     const [formData, setFormData] = useState({
         codigo: "",
         nombre: "",
         categoria: "",
         stock: "",
-        unidad: "",
+        unidadMedida: "",
         precioCompra: "",
         precioVenta: "",
         proveedor: "",
@@ -24,24 +26,49 @@ const AgregarProducto = ({ toggleAgregar, addProducto }) => {
     };
 
     // Manejar el envío del formulario
-    const handleSubmit = (e) => {
+    const handleSubmit = async (e) => {
         e.preventDefault();
-        console.log("Datos del formulario:", formData);
-        addProducto(formData)
-        // Aquí puedes agregar la lógica para guardar o procesar los datos
-        setFormData({
-        codigo: "",
-        nombre: "",
-        categoria: "",
-        stock: "",
-        unidad: "",
-        precioCompra: "",
-        precioVenta: "",
-        proveedor: "",
-        stockMinimo: "",
-        ubicacion: "",
-        comentario: ""
-        }); // Limpiar el formulario después de enviar
+
+        // Validación de campos obligatorios
+        const requiredFields = [
+        'codigo', 'nombre', 'categoria', 'stock', 'unidadMedida', 'precioCompra',
+        'precioVenta', 'proveedor', 'stockMinimo', 'ubicacion'
+        ];
+
+        for (let field of requiredFields) {
+        if (!formData[field]) {
+            toast.error(`El campo ${field} es obligatorio.`);
+            return;
+        }
+        }
+
+        try {
+            console.log(formData)
+        const response = await axios.post('http://localhost:8080/producto/save', formData);
+        if (response.data === "Producto guardado exitosamente") {
+            toast.success("Producto guardado exitosamente");
+            addProducto(formData);  // Agregar el producto al estado global si es necesario
+            // Limpiar el formulario después de enviar
+            setFormData({
+            codigo: "",
+            nombre: "",
+            categoria: "",
+            stock: "",
+            unidadMedida: "",
+            precioCompra: "",
+            precioVenta: "",
+            proveedor: "",
+            stockMinimo: "",
+            ubicacion: "",
+            comentario: ""
+            });
+        } else {
+            toast.error(response.data);  // Si la respuesta es otro mensaje, mostrarlo como error
+        }
+        } catch (error) {
+        toast.error("Error al guardar el producto. Intenta de nuevo.");
+        console.error("Error al enviar los datos:", error);
+        }
     };
 
     return (
@@ -51,7 +78,6 @@ const AgregarProducto = ({ toggleAgregar, addProducto }) => {
             Agregar productos
             </span>
             <form onSubmit={handleSubmit} className="text-textoClaro flex flex-col gap-3">
-            
             <div className="flex gap-4">
                 <div className="text-[15px] flex flex-col gap-1">
                 <label htmlFor="codigo" className="flex items-center gap-2">
@@ -115,11 +141,11 @@ const AgregarProducto = ({ toggleAgregar, addProducto }) => {
             {/* Unidad y Precios */}
             <div className="flex gap-4">
                 <div className="text-[15px] flex flex-col gap-1">
-                <label htmlFor="unidad">Unidad de medida</label>
+                <label htmlFor="unidadMedida">Unidad de medida</label>
                 <select
-                    name="unidad"
-                    id="unidad"
-                    value={formData.unidad}
+                    name="unidadMedida"
+                    id="unidadMedida"
+                    value={formData.unidadMedida}
                     onChange={handleChange}
                     className="w-[250px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario"
                 >

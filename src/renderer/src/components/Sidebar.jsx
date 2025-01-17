@@ -49,7 +49,7 @@ const Sidebar = () => {
                     </Link>
                         
                     <Link to="/Categorias">
-                        <ItemsSidebar isOpen={isOpen} name="Categorías" Icon={FaListAlt} />
+                        <ItemsSidebar isOpen={isOpen} name="Datos/Tablas" Icon={FaListAlt} />
                     </Link>
 
                     <Link to="/Stock">

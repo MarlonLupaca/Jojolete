@@ -1,187 +1,244 @@
-import React, { useState } from 'react'
-import { FaBarcode } from 'react-icons/fa'
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { toast } from 'react-toastify';
+import { FaBarcode } from 'react-icons/fa';
+import 'react-toastify/dist/ReactToastify.css';
 
-const EditarProducto = ({producto, cerrarEditar}) => {
+const EditarProducto = ({ toggleEditar, codigo, fetchProductos }) => {
+    const [producto, setProducto] = useState({
+        nombre: '',
+        categoria: '',
+        unidadMedida: '',
+        stock: 0,
+        precioCompra: 0,
+        precioVenta: 0,
+        stockMinimo: 0,
+        proveedor: '',
+        ubicacion: '',
+        comentario: '',
+    });
 
-    const [venta, setventa] = useState(producto.precioVenta)
+    // Cargar los datos del producto al iniciar el componente
+    useEffect(() => {
+        const fetchProducto = async () => {
+            try {
+                const response = await axios.get(`http://localhost:8080/producto/find/${codigo}`);
+                setProducto(response.data);
+            } catch (error) {
+                toast.error('Error al obtener los datos del producto.');
+            }
+        };
 
-    const handleVenta = (e) =>{
-        console.log(venta)
-        setventa(e.target.value)
-        
-    }
+        fetchProducto();
+    }, [codigo]);
 
-    
+    // Manejar cambios en los inputs
+    const handleChange = (e) => {
+        const { name, value } = e.target;
+        setProducto({ ...producto, [name]: value });
+    };
+
+    // Actualizar el producto
+    const handleActualizar = async () => {
+        try {
+            const response = await axios.put(`http://localhost:8080/producto/update/${codigo}`, producto);
+            if (response.data === 'Producto actualizado exitosamente') {
+                toast.success('Producto actualizado exitosamente');
+                fetchProductos()
+                toggleEditar();
+            } else {
+                toast.error('Error al actualizar el producto.');
+            }
+        } catch (error) {
+            toast.error('Error al actualizar el producto.');
+        }
+    };
+
     return (
         <div className="fixed flex justify-center items-center w-screen h-screen bg-[#000000bc] top-0 left-0 z-[100]">
             <div className="bg-secundario rounded-lg w-fit py-4 px-5 pb-5">
-                <span className="text-[20px] mb-2 text-textoClaro font-[700] text-center block">Agregar productos</span>
+                <span className="text-[20px] mb-2 text-textoClaro font-[700] text-center block">
+                    Editar producto
+                </span>
                 <form className="text-textoClaro flex flex-col gap-3">
                     <div className="flex gap-4">
                         <div className="text-[15px] flex flex-col gap-1">
-                            <label htmlFor="nombre" className="flex items-center gap-2">Codigo <FaBarcode className=' text-[20px]'/>
+                            <label htmlFor="codigo" className="flex items-center gap-2">
+                                Código <FaBarcode className="text-[20px]" />
                             </label>
                             <input
-                                placeholder="codigo" 
-                                type="text" 
-                                name="nombre" 
-                                id="nombre"
+                                type="text"
+                                name="codigo"
+                                id="codigo"
                                 value={producto.codigo}
-                                className='w-[250px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario' 
+                                readOnly
+                                className="w-[250px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario"
                             />
                         </div>
                         <div className="text-[15px] flex flex-col gap-1">
                             <label htmlFor="nombre">Nombre</label>
-                            <input 
-                                placeholder="nombre"
-                                type="text" 
-                                name="nombre" 
+                            <input
+                                type="text"
+                                name="nombre"
                                 id="nombre"
                                 value={producto.nombre}
-                                className='w-[250px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario' 
+                                onChange={handleChange}
+                                className="w-[250px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario"
                             />
                         </div>
                     </div>
 
                     <div className="flex gap-4">
                         <div className="text-[15px] flex flex-col gap-1">
-                            <label htmlFor="nombre">Categoria</label>
-                            <select 
-                                name="" 
-                                id=""
-                                className='w-[250px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario'
-                                >
-                                <option value="">Categoria 1</option>
-                                <option value="">Categoria 2</option>
-                                <option value="">Categoria 3</option>
-                                <option value="">Categoria 4</option>
+                            <label htmlFor="categoria">Categoría</label>
+                            <select
+                                name="categoria"
+                                id="categoria"
+                                value={producto.categoria}
+                                onChange={handleChange}
+                                className="w-[250px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario"
+                            >
+                                <option value="Categoria 1">Categoria 1</option>
+                                <option value="Categoria 2">Categoria 2</option>
+                                <option value="Categoria 3">Categoria 3</option>
+                                <option value="Categoria 4">Categoria 4</option>
                             </select>
                         </div>
                         <div className="text-[15px] flex flex-col gap-1">
-                            <label htmlFor="Stock">Stock</label>
-                            <input 
-                                placeholder="stock"
+                            <label htmlFor="stock">Stock</label>
+                            <input
                                 type="number"
-                                min={0} 
-                                name="Stock" 
-                                id="Stock"
+                                name="stock"
+                                id="stock"
                                 value={producto.stock}
-                                className='w-[250px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario' 
+                                onChange={handleChange}
+                                min="0"
+                                className="w-[250px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario"
                             />
                         </div>
                     </div>
+
                     <div className="flex gap-4">
                         <div className="text-[15px] flex flex-col gap-1">
-                            <label htmlFor="Unidad">Unidad de medida</label>
-                            <select 
-                                name="" 
-                                id=""
-                                className='w-[250px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario'
-                                >
-                                <option value="">Unidad 1</option>
-                                <option value="">Unidad 2</option>
-                                <option value="">Unidad 3</option>
-                                <option value="">Unidad 4</option>
+                            <label htmlFor="unidadMedida">Unidad de medida</label>
+                            <select
+                                name="unidadMedida"
+                                id="unidadMedida"
+                                value={producto.unidadMedida}
+                                onChange={handleChange}
+                                className="w-[250px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario"
+                            >
+                                <option value="Unidad 1">Unidad 1</option>
+                                <option value="Unidad 2">Unidad 2</option>
+                                <option value="Unidad 3">Unidad 3</option>
+                                <option value="Unidad 4">Unidad 4</option>
                             </select>
                         </div>
                         <div className="text-[15px] flex flex-col gap-1">
-                            <label htmlFor="Stock">Precio de compra S/.</label>
-                            <input 
-                                placeholder="compra"
+                            <label htmlFor="precioCompra">Precio de compra S/.</label>
+                            <input
                                 type="number"
-                                min={0} 
-                                name="Stock" 
-                                id="Stock"
-                                className='w-[250px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario' 
+                                name="precioCompra"
+                                id="precioCompra"
+                                value={producto.precioCompra}
+                                onChange={handleChange}
+                                min="0"
+                                className="w-[250px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario"
                             />
                         </div>
                     </div>
+
                     <div className="flex gap-4">
                         <div className="text-[15px] flex flex-col gap-1">
-                            <label htmlFor="Stock">Precio de venta S/.</label>
-                            <input 
-                                placeholder="venta"
+                            <label htmlFor="precioVenta">Precio de venta S/.</label>
+                            <input
                                 type="number"
-                                min={0} 
-                                name="Stock" 
-                                id="Stock"
-                                value={venta}
-                                onChange={handleVenta}
-                                className='w-[250px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario' 
+                                name="precioVenta"
+                                id="precioVenta"
+                                value={producto.precioVenta}
+                                onChange={handleChange}
+                                min="0"
+                                className="w-[250px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario"
                             />
                         </div>
                         <div className="text-[15px] flex flex-col gap-1">
-                            <label htmlFor="Unidad">Proveedor</label>
-                            <select 
-                                name="" 
-                                id=""
-                                className='w-[250px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario'
-                                >
-                                <option value="">Proveedor 1</option>
-                                <option value="">Proveedor 2</option>
-                                <option value="">Proveedor 3</option>
-                                <option value="">Proveedor 4</option>
+                            <label htmlFor="proveedor">Proveedor</label>
+                            <select
+                                name="proveedor"
+                                id="proveedor"
+                                value={producto.proveedor}
+                                onChange={handleChange}
+                                className="w-[250px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario"
+                            >
+                                <option value="Proveedor 1">Proveedor 1</option>
+                                <option value="Proveedor 2">Proveedor 2</option>
+                                <option value="Proveedor 3">Proveedor 3</option>
+                                <option value="Proveedor 4">Proveedor 4</option>
                             </select>
                         </div>
                     </div>
+
                     <div className="flex gap-4">
                         <div className="text-[15px] flex flex-col gap-1">
-                            <label htmlFor="Stock">Stock minimo permitido</label>
-                            <input 
-                                placeholder="minimo"
+                            <label htmlFor="stockMinimo">Stock mínimo permitido</label>
+                            <input
                                 type="number"
-                                min={0} 
-                                name="Stock" 
-                                id="Stock"
-                                className='w-[250px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario' 
+                                name="stockMinimo"
+                                id="stockMinimo"
+                                value={producto.stockMinimo}
+                                onChange={handleChange}
+                                min="0"
+                                className="w-[250px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario"
                             />
                         </div>
                         <div className="text-[15px] flex flex-col gap-1">
-                            <label htmlFor="Unidad">Ubicacion</label>
-                            <select 
-                                name="" 
-                                id=""
-                                className='w-[250px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario'
-                                >
-                                <option value="">Ubicacion 1</option>
-                                <option value="">Ubicacion 2</option>
-                                <option value="">Ubicacion 3</option>
-                                <option value="">Ubicacion 4</option>
+                            <label htmlFor="ubicacion">Ubicación</label>
+                            <select
+                                name="ubicacion"
+                                id="ubicacion"
+                                value={producto.ubicacion}
+                                onChange={handleChange}
+                                className="w-[250px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario"
+                            >
+                                <option value="Ubicación 1">Ubicación 1</option>
+                                <option value="Ubicación 2">Ubicación 2</option>
+                                <option value="Ubicación 3">Ubicación 3</option>
+                                <option value="Ubicación 4">Ubicación 4</option>
                             </select>
                         </div>
                     </div>
+
                     <div className="text-[15px] flex flex-col gap-1">
-                        <label htmlFor="Descripcion">Comentario</label>
+                        <label htmlFor="comentario">Comentario</label>
                         <textarea
-                            placeholder="Comentario"
-                            type="text"
-                            name="Descripcion" 
-                            id="Descripcion"
-                            className=' px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario max-h-[70px]' 
+                            name="comentario"
+                            id="comentario"
+                            value={producto.comentario}
+                            onChange={handleChange}
+                            className="px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario max-h-[70px]"
                         />
                     </div>
+
                     <div className="mt-2 flex justify-end gap-2 text-[14px] font-[700]">
-                        <button 
-                            onClick={cerrarEditar}
-                            type='button'
-                            className="px-4 py-1 bg-cuarto text-white font-semibold rounded-lg  border-2 border-secundario transform transition duration-200 hover:scale-[1.02]"
+                        <button
+                            onClick={toggleEditar}
+                            type="button"
+                            className="px-4 py-1 bg-cuarto text-white font-semibold rounded-lg border-2 border-secundario transform transition duration-200 hover:scale-[1.02]"
                         >
                             Cancelar
                         </button>
                         <button
-                            type='button'
-                            className="px-4 py-1 bg-terceario text-white font-semibold rounded-lg  border-2 border-secundario transform transition duration-200 hover:scale-[1.02]"
+                            onClick={handleActualizar}
+                            type="button"
+                            className="px-4 py-1 bg-quito text-white font-semibold rounded-lg border-2 border-secundario transform transition duration-200 hover:scale-[1.02]"
                         >
-                            Agregar
+                            Actualizar
                         </button>
                     </div>
-                    
-                    
                 </form>
-                
             </div>
         </div>
-    )
-}
+    );
+};
 
-export default EditarProducto
+export default EditarProducto;
