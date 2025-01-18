@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { FaBarcode } from "react-icons/fa";
 import axios from 'axios';
 import { toast } from 'react-toastify';  // Importa el toast para las notificaciones
@@ -19,6 +19,12 @@ const AgregarProducto = ({ toggleAgregar, addProducto }) => {
         comentario: ""
     });
 
+    // Estado para las opciones de select
+    const [categorias, setCategorias] = useState([]);
+    const [unidades, setUnidades] = useState([]);
+    const [proveedores, setProveedores] = useState([]);
+    const [ubicaciones, setUbicaciones] = useState([]);
+
     // Manejar cambios en los campos del formulario
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -28,48 +34,95 @@ const AgregarProducto = ({ toggleAgregar, addProducto }) => {
     // Manejar el envío del formulario
     const handleSubmit = async (e) => {
         e.preventDefault();
-
+    
         // Validación de campos obligatorios
         const requiredFields = [
-        'codigo', 'nombre', 'categoria', 'stock', 'unidadMedida', 'precioCompra',
-        'precioVenta', 'proveedor', 'stockMinimo', 'ubicacion'
+            /** aqui reemplaza unidadMedida por "Unidad" y stockMonimo por "Stock Minimo si reemplazas reemplazalo donde se deb apra que funciones como esta funcionando " */
+            'codigo', 'nombre', 'categoria', 'stock', 'unidadMedida', 'precioCompra',
+            'precioVenta', 'proveedor', 'stockMinimo', 'ubicacion'
         ];
-
+    
         for (let field of requiredFields) {
-        if (!formData[field]) {
-            toast.error(`El campo ${field} es obligatorio.`);
-            return;
+            if (!formData[field] || formData[field] === "") {
+                toast.error(`El campo ${field} es obligatorio.`);
+                return;
+            }
         }
-        }
-
+    
         try {
-            console.log(formData)
-        const response = await axios.post('http://localhost:8080/producto/save', formData);
-        if (response.data === "Producto guardado exitosamente") {
-            toast.success("Producto guardado exitosamente");
-            addProducto(formData);  // Agregar el producto al estado global si es necesario
-            // Limpiar el formulario después de enviar
-            setFormData({
-            codigo: "",
-            nombre: "",
-            categoria: "",
-            stock: "",
-            unidadMedida: "",
-            precioCompra: "",
-            precioVenta: "",
-            proveedor: "",
-            stockMinimo: "",
-            ubicacion: "",
-            comentario: ""
-            });
-        } else {
-            toast.error(response.data);  // Si la respuesta es otro mensaje, mostrarlo como error
-        }
+            console.log(formData);
+            const response = await axios.post('http://localhost:8080/producto/save', formData);
+            if (response.data === "Producto guardado exitosamente") {
+                toast.success("Producto guardado exitosamente");
+                addProducto(formData);  // Agregar el producto al estado global si es necesario
+                // Limpiar el formulario después de enviar
+                setFormData({
+                    codigo: "",
+                    nombre: "",
+                    categoria: "",
+                    stock: "",
+                    unidadMedida: "",
+                    precioCompra: "",
+                    precioVenta: "",
+                    proveedor: "",
+                    stockMinimo: "",
+                    ubicacion: "",
+                    comentario: ""
+                });
+            } else {
+                toast.error(response.data);  // Si la respuesta es otro mensaje, mostrarlo como error
+            }
         } catch (error) {
-        toast.error("Error al guardar el producto. Intenta de nuevo.");
-        console.error("Error al enviar los datos:", error);
+            toast.error("Error al guardar el producto. Intenta de nuevo.");
+            console.error("Error al enviar los datos:", error);
         }
     };
+    
+    useEffect(() => {
+        // Solicitud para obtener las categorías
+        fetch("http://localhost:8080/categoria/all")
+            .then((response) => response.json())
+            .then((data) => {
+                setCategorias(data);
+            })
+            .catch((error) => {
+                console.error("Error al obtener las categorías:", error);
+                setMensaje("Error al cargar las categorías");
+            });
+
+        // Solicitud para obtener las unidades
+        fetch("http://localhost:8080/medida/all")
+            .then((response) => response.json())
+            .then((data) => {
+                setUnidades(data);
+            })
+            .catch((error) => {
+                console.error("Error al obtener las unidades:", error);
+                setMensaje("Error al cargar las unidades");
+            });
+
+        // Solicitud para obtener los proveedores
+        fetch("http://localhost:8080/proveedor/all")
+            .then((response) => response.json())
+            .then((data) => {
+                setProveedores(data);
+            })
+            .catch((error) => {
+                console.error("Error al obtener los proveedores:", error);
+                setMensaje("Error al cargar los proveedores");
+            });
+
+        // Solicitud para obtener las ubicaciones
+        fetch("http://localhost:8080/ubicacion/all")
+            .then((response) => response.json())
+            .then((data) => {
+                setUbicaciones(data);
+            })
+            .catch((error) => {
+                console.error("Error al obtener las ubicaciones:", error);
+                setMensaje("Error al cargar las ubicaciones");
+            });
+    }, []);
 
     return (
         <div className="fixed flex justify-center items-center w-screen h-screen bg-[#000000bc] top-0 left-0 z-[100]">
@@ -118,10 +171,10 @@ const AgregarProducto = ({ toggleAgregar, addProducto }) => {
                     onChange={handleChange}
                     className="w-[250px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario"
                 >
-                    <option value="Categoria 1">Categoria 1</option>
-                    <option value="Categoria 2">Categoria 2</option>
-                    <option value="Categoria 3">Categoria 3</option>
-                    <option value="Categoria 4">Categoria 4</option>
+                    <option value="">Seleciona una categoria</option>
+                    {categorias.map((categoria) => (
+                        <option key={categoria.id} value={categoria.nombre}>{categoria.nombre}</option>
+                    ))}
                 </select>
                 </div>
                 <div className="text-[15px] flex flex-col gap-1">
@@ -149,10 +202,10 @@ const AgregarProducto = ({ toggleAgregar, addProducto }) => {
                     onChange={handleChange}
                     className="w-[250px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario"
                 >
-                    <option value="Unidad 1">Unidad 1</option>
-                    <option value="Unidad 2">Unidad 2</option>
-                    <option value="Unidad 3">Unidad 3</option>
-                    <option value="Unidad 4">Unidad 4</option>
+                    <option value="">Seleciona una medida</option>
+                    {unidades.map((unidad) => (
+                        <option key={unidad.id} value={unidad.nombre}>{unidad.nombre}</option>
+                    ))}
                 </select>
                 </div>
                 <div className="text-[15px] flex flex-col gap-1">
@@ -192,10 +245,10 @@ const AgregarProducto = ({ toggleAgregar, addProducto }) => {
                     onChange={handleChange}
                     className="w-[250px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario"
                 >
-                    <option value="Proveedor 1">Proveedor 1</option>
-                    <option value="Proveedor 2">Proveedor 2</option>
-                    <option value="Proveedor 3">Proveedor 3</option>
-                    <option value="Proveedor 4">Proveedor 4</option>
+                    <option value="">Seleciona una proveedor</option>
+                    {proveedores.map((proveedor) => (
+                        <option key={proveedor.id} value={proveedor.nombre}>{proveedor.nombre}</option>
+                    ))}
                 </select>
                 </div>
             </div>
@@ -223,10 +276,10 @@ const AgregarProducto = ({ toggleAgregar, addProducto }) => {
                     onChange={handleChange}
                     className="w-[250px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario"
                 >
-                    <option value="Ubicacion 1">Ubicacion 1</option>
-                    <option value="Ubicacion 2">Ubicacion 2</option>
-                    <option value="Ubicacion 3">Ubicacion 3</option>
-                    <option value="Ubicacion 4">Ubicacion 4</option>
+                    <option value="">Seleciona una ubicacion</option>
+                    {ubicaciones.map((ubicacion) => (
+                        <option key={ubicacion.id} value={ubicacion.nombre}>{ubicacion.nombre}</option>
+                    ))}
                 </select>
                 </div>
             </div>

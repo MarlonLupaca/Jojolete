@@ -29,33 +29,41 @@ const Home = () => {
     const handleInputChange = async (e) => {
         const valor = e.target.value;
         setCodigo(valor);
-
+    
         if (!valor) {
             setProducto(null);
             return;
         }
-
+    
         try {
             const response = await fetch(`http://localhost:8080/producto/find/${valor}`);
             if (response.ok) {
-                const data = await response.json();
-                if (data) {
-                    if (cantidad <= 0 || isNaN(cantidad)) {
-                        toast.error("Cantidad es erronea");
-                        return;
+                // Verifica si hay contenido en la respuesta
+                const text = await response.text();
+                if (text) {
+                    const data = JSON.parse(text);
+                    if (data) {
+                        if (cantidad <= 0 || isNaN(cantidad)) {
+                            toast.error("Cantidad es errónea.");
+                            return;
+                        }
+                        agregarProductoAVenta(data);
                     }
-                    agregarProductoAVenta(data);
+                    setProducto(data);
+                } else {
+                    setProducto(null); // No hay producto encontrado
                 }
-                setProducto(data || null);
             } else {
                 setProducto(null);
+                toast.error("Error al buscar el producto.");
             }
         } catch (error) {
             console.error("Error al buscar el producto:", error);
             setProducto(null);
+            toast.error("Ocurrió un error al buscar el producto.");
         }
     };
-
+    
     const agregarProductoAVenta = (nuevoProducto) => {
         setProductosVenta((prevProductos) => {
             const productoExistente = prevProductos.find((p) => p.codigo === nuevoProducto.codigo);
@@ -126,7 +134,11 @@ const Home = () => {
                             </div>
                         )}
                     </div>
-                    <PuntoDeVenta productos={productosVenta} />
+                    <PuntoDeVenta 
+                        productos={productosVenta} 
+                        setProductosVenta={setProductosVenta} 
+                    />
+
                 </div>
             </div>
         </div>

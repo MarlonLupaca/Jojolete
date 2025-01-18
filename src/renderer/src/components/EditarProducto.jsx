@@ -18,6 +18,12 @@ const EditarProducto = ({ toggleEditar, codigo, fetchProductos }) => {
         comentario: '',
     });
 
+    const [categorias, setCategorias] = useState([]);
+    const [unidades, setUnidades] = useState([]);
+    const [proveedores, setProveedores] = useState([]);
+    const [ubicaciones, setUbicaciones] = useState([]);
+    const [mensaje, setMensaje] = useState('');
+
     // Cargar los datos del producto al iniciar el componente
     useEffect(() => {
         const fetchProducto = async () => {
@@ -29,7 +35,32 @@ const EditarProducto = ({ toggleEditar, codigo, fetchProductos }) => {
             }
         };
 
+        // Solicitudes para cargar los datos de las categorías, unidades, proveedores y ubicaciones
+        const fetchData = async () => {
+            try {
+                const categoriasResponse = await fetch("http://localhost:8080/categoria/all");
+                const categoriasData = await categoriasResponse.json();
+                setCategorias(categoriasData);
+
+                const unidadesResponse = await fetch("http://localhost:8080/medida/all");
+                const unidadesData = await unidadesResponse.json();
+                setUnidades(unidadesData);
+
+                const proveedoresResponse = await fetch("http://localhost:8080/proveedor/all");
+                const proveedoresData = await proveedoresResponse.json();
+                setProveedores(proveedoresData);
+
+                const ubicacionesResponse = await fetch("http://localhost:8080/ubicacion/all");
+                const ubicacionesData = await ubicacionesResponse.json();
+                setUbicaciones(ubicacionesData);
+            } catch (error) {
+                console.error("Error al cargar los datos:", error);
+                setMensaje("Error al cargar los datos");
+            }
+        };
+
         fetchProducto();
+        fetchData();
     }, [codigo]);
 
     // Manejar cambios en los inputs
@@ -44,7 +75,7 @@ const EditarProducto = ({ toggleEditar, codigo, fetchProductos }) => {
             const response = await axios.put(`http://localhost:8080/producto/update/${codigo}`, producto);
             if (response.data === 'Producto actualizado exitosamente') {
                 toast.success('Producto actualizado exitosamente');
-                fetchProductos()
+                fetchProductos();
                 toggleEditar();
             } else {
                 toast.error('Error al actualizar el producto.');
@@ -98,10 +129,12 @@ const EditarProducto = ({ toggleEditar, codigo, fetchProductos }) => {
                                 onChange={handleChange}
                                 className="w-[250px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario"
                             >
-                                <option value="Categoria 1">Categoria 1</option>
-                                <option value="Categoria 2">Categoria 2</option>
-                                <option value="Categoria 3">Categoria 3</option>
-                                <option value="Categoria 4">Categoria 4</option>
+                                <option value="">Seleciona una categoria</option>
+                                {categorias.map((categoria) => (
+                                    <option key={categoria.id} value={categoria.nombre}>
+                                        {categoria.nombre}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                         <div className="text-[15px] flex flex-col gap-1">
@@ -128,10 +161,12 @@ const EditarProducto = ({ toggleEditar, codigo, fetchProductos }) => {
                                 onChange={handleChange}
                                 className="w-[250px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario"
                             >
-                                <option value="Unidad 1">Unidad 1</option>
-                                <option value="Unidad 2">Unidad 2</option>
-                                <option value="Unidad 3">Unidad 3</option>
-                                <option value="Unidad 4">Unidad 4</option>
+                                <option value="">Seleciona una unidad</option>
+                                {unidades.map((unidad) => (
+                                    <option key={unidad.id} value={unidad.nombre}>
+                                        {unidad.nombre}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                         <div className="text-[15px] flex flex-col gap-1">
@@ -170,10 +205,12 @@ const EditarProducto = ({ toggleEditar, codigo, fetchProductos }) => {
                                 onChange={handleChange}
                                 className="w-[250px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario"
                             >
-                                <option value="Proveedor 1">Proveedor 1</option>
-                                <option value="Proveedor 2">Proveedor 2</option>
-                                <option value="Proveedor 3">Proveedor 3</option>
-                                <option value="Proveedor 4">Proveedor 4</option>
+                                <option value="">Seleciona una proveedor</option>
+                                {proveedores.map((proveedor) => (
+                                    <option key={proveedor.id} value={proveedor.nombre}>
+                                        {proveedor.nombre}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                     </div>
@@ -200,10 +237,12 @@ const EditarProducto = ({ toggleEditar, codigo, fetchProductos }) => {
                                 onChange={handleChange}
                                 className="w-[250px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario"
                             >
-                                <option value="Ubicación 1">Ubicación 1</option>
-                                <option value="Ubicación 2">Ubicación 2</option>
-                                <option value="Ubicación 3">Ubicación 3</option>
-                                <option value="Ubicación 4">Ubicación 4</option>
+                                <option value="">Seleciona una ubicacion</option>
+                                {ubicaciones.map((ubicacion) => (
+                                    <option key={ubicacion.id} value={ubicacion.nombre}>
+                                        {ubicacion.nombre}
+                                    </option>
+                                ))}
                             </select>
                         </div>
                     </div>

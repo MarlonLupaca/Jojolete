@@ -1,46 +1,94 @@
-import React from 'react'
+import React, { useState } from 'react'
+import axios from 'axios'
+import { toast } from 'react-toastify'
 
-const AgregarProveedor = ({toggleProveedor}) => {
+const AgregarProveedor = ({ toggleProveedor , fetchData = null }) => {
+    const [nombre, setNombre] = useState('')
+    const [comentario, setComentario] = useState('')
+
+    // Función para manejar la validación y el envío de datos
+    const handleSubmit = async (e) => {
+        e.preventDefault()
+
+        // Validación: nombre obligatorio
+        if (!nombre) {
+            toast.error('El nombre es obligatorio')
+            return
+        }
+
+        // Si el comentario está vacío, guardamos "sin comentario"
+        const proveedorData = {
+            nombre: nombre,
+            comentario: comentario || 'sin comentario',
+        }
+
+        try {
+            const response = await axios.post('http://localhost:8080/proveedor/save', proveedorData)
+
+            if (response.data === 'Proveedor guardado exitosamente') {
+                toast.success('Proveedor guardado exitosamente')
+
+                if (fetchData != null) {
+                    fetchData()
+                }
+
+                // Opcional: Limpiar campos o realizar otras acciones
+                setNombre('')
+                setComentario('')
+
+            } else {
+                toast.error('Hubo un error al guardar el proveedor')
+            }
+        } catch (error) {
+            toast.error('Error de servidor, intente nuevamente')
+        }
+    }
+
     return (
-        <div  className="fixed flex justify-center items-center w-screen h-screen bg-[#000000bc] top-0 left-0 z-[100]">
+        <div className="fixed flex justify-center items-center w-screen h-screen bg-[#000000bc] top-0 left-0 z-[100]">
             <div className="bg-secundario rounded-lg w-fit py-4 px-5 pb-5">
                 <span className="text-[20px] mb-2 text-textoClaro font-[700] text-center block">Agregar proveedor</span>
-                <form className="text-textoClaro flex flex-col gap-3">
+                <form className="text-textoClaro flex flex-col gap-3" onSubmit={handleSubmit}>
                     <div className="text-[15px] flex flex-col gap-1">
                         <label htmlFor="nombre">Nombre</label>
                         <input 
-                            placeholder='nombre'
+                            placeholder="nombre"
                             type="text" 
                             name="nombre" 
                             id="nombre"
-                            className='w-[450px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario' 
+                            value={nombre}
+                            onChange={(e) => setNombre(e.target.value)}
+                            className="w-[450px] px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario" 
                         />
                     </div>
                     <div className="text-[15px] flex flex-col gap-1">
                         <label htmlFor="Descripcion">Comentario</label>
                         <textarea
-                            placeholder='comentario'
+                            placeholder="comentario"
                             type="text"
                             name="Descripcion" 
                             id="Descripcion"
-                            className=' px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario max-h-[70px]' 
+                            value={comentario}
+                            onChange={(e) => setComentario(e.target.value)}
+                            className="px-2 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario max-h-[70px]" 
                         />
                     </div>
                     <div className="mt-2 flex justify-end gap-2 text-[14px] font-[700]">
                         <button 
+                            type="button"
                             onClick={toggleProveedor}
-                            className="px-4 py-1 bg-cuarto text-white font-semibold rounded-lg  border-2 border-secundario transform transition duration-200 hover:scale-[1.02]"
+                            className="px-4 py-1 bg-cuarto text-white font-semibold rounded-lg border-2 border-secundario transform transition duration-200 hover:scale-[1.02]"
                         >
                             Cancelar
                         </button>
                         <button
-                            className="px-4 py-1 bg-terceario text-white font-semibold rounded-lg  border-2 border-secundario transform transition duration-200 hover:scale-[1.02]"
+                            type="submit"
+                            className="px-4 py-1 bg-terceario text-white font-semibold rounded-lg border-2 border-secundario transform transition duration-200 hover:scale-[1.02]"
                         >
                             Agregar
                         </button>
                     </div>
                 </form>
-                
             </div>
         </div>
     )
