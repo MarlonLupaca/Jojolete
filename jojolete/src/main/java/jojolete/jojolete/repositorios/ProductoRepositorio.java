@@ -7,7 +7,7 @@ import java.util.Optional;
 import jojolete.jojolete.models.Producto;
 
 @Repository
-public interface ProductoRepositorio extends JpaRepository<Producto, Long> {
+public interface ProductoRepositorio extends JpaRepository<Producto, String> {
     boolean existsByCodigo(String codigo);
 
     Optional<Producto> findByCodigo(String codigo);

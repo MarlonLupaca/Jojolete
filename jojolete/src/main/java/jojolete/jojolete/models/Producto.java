@@ -1,6 +1,5 @@
 package jojolete.jojolete.models;
 
-
 import jakarta.persistence.*;
 import java.math.BigDecimal;
 
@@ -24,7 +23,7 @@ public class Producto {
     @Column(name = "stock")
     private Integer stock;
 
-    @Column(name = "precio_compra" )
+    @Column(name = "precio_compra")
     private BigDecimal precioCompra;
 
     @Column(name = "precio_venta")

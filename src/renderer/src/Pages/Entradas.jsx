@@ -1,3 +1,4 @@
+import DetalleVenta from "../components/DetalleVenta"
 import Header from "../components/Header"
 import Sidebar from "../components/Sidebar"
 
@@ -7,7 +8,10 @@ const Entradas = () => {
             <Sidebar/>
             <div className="w-full">
                 <Header name="Entradas"/>
-                Entradas
+                <div className="p-6">
+                    <DetalleVenta/>
+                </div>
+                
             </div>
         </div>
     )

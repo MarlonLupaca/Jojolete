@@ -11,7 +11,7 @@ import jojolete.jojolete.service.MedidaServicio;
 @RequestMapping("/medida")
 @CrossOrigin(origins = "*")
 public class MedidaControlador {
-
+    
     @Autowired
     private MedidaServicio medidaServicio;
 
