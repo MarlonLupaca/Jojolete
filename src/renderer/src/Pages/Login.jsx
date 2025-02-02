@@ -1,17 +1,17 @@
-import React, { useState } from 'react';
+import React, { useState, useContext } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import { UserContext } from '../components/UserContext.jsx';
 
 const Login = () => {
     const [correo, setCorreo] = useState('');
     const [contrasena, setContrasena] = useState('');
     const [loading, setLoading] = useState(false);
-    
     const navigate = useNavigate();
+    const { setUser } = useContext(UserContext);
 
-    // Función para validar correo
     const validateEmail = (email) => {
         const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,6}$/;
         return regex.test(email);
@@ -20,7 +20,6 @@ const Login = () => {
     const handleLogin = async (e) => {
         e.preventDefault();
 
-        // Validaciones de los campos
         if (!correo || !contrasena) {
             toast.error('Por favor, completa todos los campos.');
             return;
@@ -39,13 +38,11 @@ const Login = () => {
                 contrasena
             });
 
-            // Si el login es exitoso
-            if (response.data === 'Ingreso exitoso') {
-                localStorage.setItem('token', response.data.token); // Guardar token en el almacenamiento local
-                navigate('/home'); // Redirigir al home
+            if (response.data.nombres !== 'No existe') {
+                setUser({ nombres: response.data.nombres, apellidos: response.data.apellidos });
+                navigate('/inicio');
                 toast.success('¡Inicio de sesión exitoso!');
             } else {
-                // Si las credenciales son incorrectas
                 toast.error('Credenciales incorrectas');
             }
         } catch (error) {
@@ -58,17 +55,13 @@ const Login = () => {
     return (
         <div className="flex items-center justify-center min-h-screen bg-secundario">
             <div className="flex justify-center items-center w-[1000px] h-[500px] p-8 bg-primario rounded-2xl shadow-lg">
-                {/* Sección de Imagen */}
                 <div className="w-[50%] flex justify-center items-center">
                     <img src="./login.svg" alt="Ilustración de Login" className="max-w-[100%]" />
                 </div>
-
-                {/* Sección del Formulario */}
                 <div className="w-[50%] px-[60px]">
                     <h2 className="mb-6 text-4xl font-extrabold text-center text-textoClaro">
                         Iniciar Sesión
                     </h2>
-
                     <form onSubmit={handleLogin}>
                         <div className="mb-4">
                             <label htmlFor="email" className="block mb-2 text-sm font-semibold text-textoClaro">
@@ -83,7 +76,6 @@ const Login = () => {
                                 placeholder="tucorreo@ejemplo.com"
                             />
                         </div>
-
                         <div className="mb-4">
                             <label htmlFor="password" className="block mb-2 text-sm font-semibold text-textoClaro">
                                 Contraseña
@@ -97,7 +89,6 @@ const Login = () => {
                                 placeholder="••••••••"
                             />
                         </div>
-
                         <button
                             type="submit"
                             className="w-full px-4 py-2 text-white bg-terceario rounded-lg hover:bg-opacity-90 transition duration-200 focus:outline-none"
@@ -106,7 +97,6 @@ const Login = () => {
                             {loading ? 'Cargando...' : 'Iniciar Sesión'}
                         </button>
                     </form>
-
                     <div className="mt-4 text-center">
                         <Link to="/Registrarse" className="text-sm text-terceario hover:underline">
                             ¿No tienes una cuenta? Regístrate

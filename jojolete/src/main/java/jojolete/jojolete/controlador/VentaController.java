@@ -1,101 +1,87 @@
 package jojolete.jojolete.controlador;
 
 import jojolete.jojolete.models.CabeceraVenta;
-import jojolete.jojolete.models.DetalleVenta;
-import org.springframework.beans.factory.annotation.Autowired;
+import jojolete.jojolete.service.VentaService;
+import jakarta.persistence.EntityNotFoundException;
+import java.util.List;
+import lombok.RequiredArgsConstructor;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.List;
-import java.util.Optional;
-import jojolete.jojolete.service.VentaService;
-
 @RestController
 @RequestMapping("/api/ventas")
+@RequiredArgsConstructor
 @CrossOrigin(origins = "*")
 public class VentaController {
 
-    @Autowired
-    private VentaService ventaService;
+    private final VentaService ventaService;
 
-    // Crear una nueva venta
-    @PostMapping
-    public ResponseEntity<CabeceraVenta> crearVenta(@RequestBody VentaRequest request) {
-        // Extraer la cabecera y los detalles de la solicitud
-        CabeceraVenta cabeceraVenta = request.getCabeceraVenta();
-        List<DetalleVenta> detalles = request.getDetalles();
-
-        try {
-            // Llamar al servicio para crear la venta
-            CabeceraVenta ventaCreada = ventaService.crearVenta(cabeceraVenta, detalles);
-            return ResponseEntity.ok(ventaCreada);  // Respuesta exitosa con la venta creada
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(null);  // Respuesta de error si hay algún problema
-        }
-    }
-
-    // Listar todas las ventas
     @GetMapping
-    public ResponseEntity<List<CabeceraVenta>> listarVentas() {
-        // Llamar al servicio para obtener todas las ventas
-        List<CabeceraVenta> ventas = ventaService.listarVentas();
-        return ResponseEntity.ok(ventas);  // Responder con la lista de ventas
+    public ResponseEntity<?> obtenerTodasLasVentas() {
+        try {
+            List<CabeceraVenta> ventas = ventaService.obtenerTodasLasVentas();
+            return ResponseEntity.ok(ventas);
+        } catch (Exception e) {
+            return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error al obtener las ventas: " + e.getMessage());
+        }
+    }
+    
+    @PostMapping
+    public ResponseEntity<?> registrarVenta(@RequestBody CabeceraVenta cabeceraVenta) {
+        try {
+            CabeceraVenta nuevaVenta = ventaService.registrarVenta(cabeceraVenta);
+            return ResponseEntity.status(HttpStatus.CREATED).body(nuevaVenta);
+        } catch (IllegalStateException e) {
+            return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body("Error de stock: " + e.getMessage());
+        } catch (IllegalArgumentException e) {
+            return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body("Error en los datos de la venta: " + e.getMessage());
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error al procesar la venta: " + e.getMessage());
+        }
     }
 
-    // Buscar venta por ID
     @GetMapping("/{id}")
-    public ResponseEntity<CabeceraVenta> buscarVentaPorId(@PathVariable Integer id) {
-        Optional<CabeceraVenta> venta = ventaService.buscarVentaPorId(id);
-        return venta.map(ResponseEntity::ok)
-                    .orElseGet(() -> ResponseEntity.notFound().build());
-    }
-
-    // Actualizar una venta existente
-    @PutMapping("/{id}")
-    public ResponseEntity<CabeceraVenta> actualizarVenta(@PathVariable Integer id, @RequestBody VentaRequest request) {
-        CabeceraVenta nuevaCabecera = request.getCabeceraVenta();
-        List<DetalleVenta> nuevosDetalles = request.getDetalles();
-
+    public ResponseEntity<?> obtenerVenta(@PathVariable Long id) {
         try {
-            // Llamar al servicio para actualizar la venta
-            CabeceraVenta ventaActualizada = ventaService.actualizarVenta(id, nuevaCabecera, nuevosDetalles);
-            return ResponseEntity.ok(ventaActualizada);  // Respuesta exitosa con la venta actualizada
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.badRequest().body(null);  // Respuesta de error si hay algún problema
+            CabeceraVenta venta = ventaService.buscarPorId(id);
+            return ResponseEntity.ok(venta);
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body("Venta no encontrada: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error al obtener la venta: " + e.getMessage());
         }
     }
 
-    // Eliminar una venta
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarVenta(@PathVariable Integer id) {
+    public ResponseEntity<?> eliminarVenta(@PathVariable Long id) {
         try {
-            // Llamar al servicio para eliminar la venta
             ventaService.eliminarVenta(id);
-            return ResponseEntity.noContent().build();  // Respuesta exitosa sin contenido
-        } catch (IllegalArgumentException e) {
-            return ResponseEntity.notFound().build();  // Respuesta de error si no se encuentra la venta
-        }
-    }
-
-    // Clase auxiliar para manejar la solicitud
-    static class VentaRequest {
-        private CabeceraVenta cabeceraVenta;
-        private List<DetalleVenta> detalles;
-
-        public CabeceraVenta getCabeceraVenta() {
-            return cabeceraVenta;
-        }
-
-        public void setCabeceraVenta(CabeceraVenta cabeceraVenta) {
-            this.cabeceraVenta = cabeceraVenta;
-        }
-
-        public List<DetalleVenta> getDetalles() {
-            return detalles;
-        }
-
-        public void setDetalles(List<DetalleVenta> detalles) {
-            this.detalles = detalles;
+            return ResponseEntity.ok("Venta eliminada exitosamente");
+        } catch (EntityNotFoundException e) {
+            return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body("Venta no encontrada: " + e.getMessage());
+        } catch (Exception e) {
+            return ResponseEntity
+                .status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error al eliminar la venta: " + e.getMessage());
         }
     }
 }

@@ -4,12 +4,12 @@ import jakarta.persistence.*;
 import lombok.*;
 
 @Entity
-@Table(name = "productos")
+@Table(name = "platos")
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Producto {
+public class Plato {
     
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -20,7 +20,5 @@ public class Producto {
     
     @Column(nullable = false)
     private Double precio;
-    
-    @Column(nullable = false)
-    private Integer stock;
 }
+

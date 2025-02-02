@@ -11,9 +11,10 @@ export default {
         secundario: '#293042',
         terceario: '#3F83ED',
         cuarto: '#ED583F',
-        quito: '#FFA500',    
+        quito: '#FFA500',
+        sexto: '#2ECC71', // Verde armónico con la paleta existente
         textoClaro: '#EFF3F5',
-        textoGris:'#adb5bd'   
+        textoGris: '#adb5bd'   
       }
     },
   },

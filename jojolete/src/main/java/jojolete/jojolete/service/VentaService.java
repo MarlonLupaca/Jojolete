@@ -3,140 +3,110 @@ package jojolete.jojolete.service;
 import jojolete.jojolete.models.CabeceraVenta;
 import jojolete.jojolete.models.DetalleVenta;
 import jojolete.jojolete.models.Producto;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Service;
-import org.springframework.transaction.annotation.Transactional;
-
-import java.util.List;
-import java.util.Optional;
-
 import jojolete.jojolete.repositorios.CabeceraVentaRepository;
 import jojolete.jojolete.repositorios.DetalleVentaRepository;
 import jojolete.jojolete.repositorios.ProductoRepositorio;
+import jakarta.persistence.EntityNotFoundException;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
+import java.util.ArrayList;
+import java.util.List;
+
+@Slf4j
 @Service
+@RequiredArgsConstructor
 public class VentaService {
+    private final CabeceraVentaRepository cabeceraVentaRepository;
+    private final DetalleVentaRepository detalleVentaRepository;
+    private final ProductoRepositorio productoRepository;
 
-    @Autowired
-    private CabeceraVentaRepository cabeceraVentaRepository;
-
-    @Autowired
-    private DetalleVentaRepository detalleVentaRepository;
-
-    @Autowired
-    private ProductoRepositorio productoRepository;
-
-    @Transactional
-    public CabeceraVenta crearVenta(CabeceraVenta cabeceraVenta, List<DetalleVenta> detalles) {
-        // Guardar cabecera
-        CabeceraVenta cabeceraGuardada = cabeceraVentaRepository.save(cabeceraVenta);
-
-        // Validar y guardar detalles
-        for (DetalleVenta detalle : detalles) {
-            Producto producto = productoRepository.findById(detalle.getProducto().getCodigo())
-                    .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado: " + detalle.getProducto().getCodigo()));
-
-            // Verificar si el stock es null y asignar un valor por defecto si es necesario
-            Integer stock = producto.getStock();
-            if (stock == null) {
-                stock = 0; // Asignar un valor por defecto si el stock es null
-            }
-
-            // Verificar si el producto tiene stock suficiente
-            if (stock > 0) {
-                // Si el producto tiene stock suficiente, validar y actualizar stock
-                if (stock < detalle.getCantidad()) {
-                    throw new IllegalArgumentException("Stock insuficiente para el producto: " + producto.getCodigo());
-                }
-
-                // Actualizar stock
-                producto.setStock(stock - detalle.getCantidad());
-                productoRepository.save(producto);
-            } else {
-                // Si no tiene stock, tratamos como producto genérico
-                System.out.println("Producto sin stock disponible, se procesará como genérico: " + producto.getCodigo());
-            }
-
-            // Asociar detalle con la cabecera
-            detalle.setCabeceraVenta(cabeceraGuardada);
-            detalleVentaRepository.save(detalle);
-        }
-
-        return cabeceraGuardada;
-    }
-
-
-
-    public List<CabeceraVenta> listarVentas() {
+    public List<CabeceraVenta> obtenerTodasLasVentas() {
         return cabeceraVentaRepository.findAll();
     }
+    
+    @Transactional
+    public CabeceraVenta registrarVenta(CabeceraVenta cabeceraVenta) {
+        // Validar que los campos requeridos no sean nulos
+        if (cabeceraVenta == null || 
+            cabeceraVenta.getDetalles() == null || 
+            cabeceraVenta.getFecha() == null ||
+            cabeceraVenta.getTotal() == null) {
+            throw new IllegalArgumentException("Todos los campos son requeridos");
+        }
 
-    public Optional<CabeceraVenta> buscarVentaPorId(Integer id) {
-        return cabeceraVentaRepository.findById(id);
+        // Verificar stock antes de procesar la venta
+        for (DetalleVenta detalle : cabeceraVenta.getDetalles()) {
+            if (detalle.getProducto() != null) {
+                Producto producto = productoRepository.findById(detalle.getProducto().getId())
+                    .orElseThrow(() -> new EntityNotFoundException("Producto no encontrado con ID: " 
+                        + detalle.getProducto().getId()));
+
+                if (producto.getStock() == null || producto.getStock() < detalle.getCantidad()) {
+                    throw new IllegalStateException("Stock insuficiente para el producto: " 
+                        + producto.getNombre() + ". Stock actual: " 
+                        + producto.getStock() + ", Cantidad solicitada: " 
+                        + detalle.getCantidad());
+                }
+            }
+        }
+
+        // Primero guardamos la cabecera
+        CabeceraVenta nuevaVenta = new CabeceraVenta();
+        nuevaVenta.setFecha(cabeceraVenta.getFecha());
+        nuevaVenta.setTotal(cabeceraVenta.getTotal());
+        nuevaVenta.setMesera(cabeceraVenta.getMesera());
+        nuevaVenta.setDetalles(new ArrayList<>());
+        
+        // Guardamos la cabecera primero
+        nuevaVenta = cabeceraVentaRepository.save(nuevaVenta);
+        
+        // Ahora procesamos cada detalle
+        for (DetalleVenta detalle : cabeceraVenta.getDetalles()) {
+            // Validaciones
+            if (detalle.getCantidad() == null || detalle.getSubtotal() == null) {
+                throw new IllegalArgumentException("Cantidad y subtotal son requeridos en los detalles");
+            }
+            
+            if ((detalle.getProducto() == null && detalle.getPlato() == null) ||
+                (detalle.getProducto() != null && detalle.getPlato() != null)) {
+                throw new IllegalArgumentException("Cada detalle debe tener exactamente un producto o un plato");
+            }
+            
+            // Crear nuevo detalle y establecer sus valores
+            DetalleVenta nuevoDetalle = new DetalleVenta();
+            nuevoDetalle.setCabeceraVenta(nuevaVenta);
+            nuevoDetalle.setCantidad(detalle.getCantidad());
+            nuevoDetalle.setSubtotal(detalle.getSubtotal());
+            nuevoDetalle.setPlato(detalle.getPlato());
+            nuevoDetalle.setProducto(detalle.getProducto());
+            
+            // Actualizar stock si es un producto
+            if (detalle.getProducto() != null) {
+                Producto producto = productoRepository.findById(detalle.getProducto().getId()).get();
+                producto.setStock(producto.getStock() - detalle.getCantidad());
+                productoRepository.save(producto);
+            }
+            
+            // Guardar el detalle
+            detalleVentaRepository.save(nuevoDetalle);
+            nuevaVenta.getDetalles().add(nuevoDetalle);
+        }
+        return nuevaVenta;
+    }
+
+    public CabeceraVenta buscarPorId(Long id) {
+        return cabeceraVentaRepository.findById(id)
+            .orElseThrow(() -> new EntityNotFoundException("Venta no encontrada con ID: " + id));
     }
 
     @Transactional
-    public CabeceraVenta actualizarVenta(Integer id, CabeceraVenta nuevaCabecera, List<DetalleVenta> nuevosDetalles) {
-        CabeceraVenta cabeceraExistente = cabeceraVentaRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Venta no encontrada con ID: " + id));
-
-        // Eliminar detalles existentes y restablecer stock
-        List<DetalleVenta> detallesExistentes = detalleVentaRepository.findByCabeceraVenta(cabeceraExistente);
-        for (DetalleVenta detalle : detallesExistentes) {
-            Producto producto = productoRepository.findById(detalle.getProducto().getCodigo())
-                    .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado: " + detalle.getProducto().getCodigo()));
-            producto.setStock(producto.getStock() + detalle.getCantidad());
-            productoRepository.save(producto);
-            detalleVentaRepository.delete(detalle);
+    public void eliminarVenta(Long id) {
+        if (!cabeceraVentaRepository.existsById(id)) {
+            throw new EntityNotFoundException("No se encontró la venta con ID: " + id);
         }
-
-        // Actualizar cabecera
-        cabeceraExistente.setCajera(nuevaCabecera.getCajera());
-        cabeceraExistente.setFecha(nuevaCabecera.getFecha());
-        CabeceraVenta cabeceraActualizada = cabeceraVentaRepository.save(cabeceraExistente);
-
-        // Guardar nuevos detalles
-        for (DetalleVenta detalle : nuevosDetalles) {
-            Producto producto = productoRepository.findById(detalle.getProducto().getCodigo())
-                    .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado: " + detalle.getProducto().getCodigo()));
-
-            if (producto.getStock() < detalle.getCantidad()) {
-                throw new IllegalArgumentException("Stock insuficiente para el producto: " + producto.getCodigo());
-            }
-
-            producto.setStock(producto.getStock() - detalle.getCantidad());
-            productoRepository.save(producto);
-
-            detalle.setCabeceraVenta(cabeceraActualizada);
-            detalleVentaRepository.save(detalle);
-        }
-
-        return cabeceraActualizada;
-    }
-
-    @Transactional
-    public void eliminarVenta(Integer id) {
-        CabeceraVenta cabeceraVenta = cabeceraVentaRepository.findById(id)
-                .orElseThrow(() -> new IllegalArgumentException("Venta no encontrada con ID: " + id));
-
-        // Restablecer stock y eliminar detalles
-        List<DetalleVenta> detalles = detalleVentaRepository.findByCabeceraVenta(cabeceraVenta);
-        for (DetalleVenta detalle : detalles) {
-            Producto producto = productoRepository.findById(detalle.getProducto().getCodigo())
-                    .orElseThrow(() -> new IllegalArgumentException("Producto no encontrado: " + detalle.getProducto().getCodigo()));
-
-            // Verificar si el stock es null y asignar un valor por defecto si es necesario
-            Integer stock = producto.getStock();
-            if (stock == null) {
-                stock = 0; // Asignar un valor por defecto si el stock es null
-            }
-
-            producto.setStock(stock + detalle.getCantidad());
-            productoRepository.save(producto);
-            detalleVentaRepository.delete(detalle);
-        }
-
-        // Eliminar cabecera
-        cabeceraVentaRepository.delete(cabeceraVenta);
+        cabeceraVentaRepository.deleteById(id);
     }
 }

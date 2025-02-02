@@ -1,14 +1,13 @@
 package jojolete.jojolete.repositorios;
 
+import java.util.Optional;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
-import java.util.Optional;
 import jojolete.jojolete.models.Producto;
 
 @Repository
 public interface ProductoRepositorio extends JpaRepository<Producto, String> {
-    boolean existsByCodigo(String codigo);
 
-    Optional<Producto> findByCodigo(String codigo);
+    public Optional<Producto> findById(Long id);
 }

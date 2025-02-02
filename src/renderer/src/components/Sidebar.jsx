@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { FaBoxes,FaAngleDoubleRight, FaRegClipboard ,FaGraduationCap, FaHome, FaExchangeAlt, FaListAlt, FaWarehouse, FaUserAlt, FaBell, FaSignOutAlt } from 'react-icons/fa';
+import { MdRestaurantMenu } from "react-icons/md";
 import { Link } from 'react-router-dom';
 import ItemsSidebar from './ItemsSidebar';
 
@@ -36,8 +37,12 @@ const Sidebar = () => {
 
                 <nav className=' flex flex-col gap-[16px]'>
                     
-                    <Link to="/home">
+                    <Link to="/inicio">
                         <ItemsSidebar isOpen={isOpen} name="Dashboard" Icon={FaHome} />
+                    </Link>
+
+                    <Link to="/Menu">
+                        <ItemsSidebar isOpen={isOpen} name="Menu" Icon={MdRestaurantMenu} />
                     </Link>
                     
                     <Link to="/Productos">
@@ -46,26 +51,6 @@ const Sidebar = () => {
 
                     <Link to="/Entradas">
                         <ItemsSidebar isOpen={isOpen} name="Entradas/Salidas" Icon={FaExchangeAlt} />
-                    </Link>
-                        
-                    <Link to="/Categorias">
-                        <ItemsSidebar isOpen={isOpen} name="Datos/Tablas" Icon={FaListAlt} />
-                    </Link>
-
-                    <Link to="/Stock">
-                        <ItemsSidebar isOpen={isOpen} name="Stock" Icon={FaWarehouse} />
-                    </Link>
-                    
-                    <Link to="/Reportes">
-                        <ItemsSidebar isOpen={isOpen} name="Reportes" Icon={FaRegClipboard} />
-                    </Link>
-
-                    <Link to="/Usuarios">
-                        <ItemsSidebar isOpen={isOpen} name="Usuarios" Icon={FaUserAlt} />
-                    </Link>
-
-                    <Link to="/Alertas">
-                        <ItemsSidebar isOpen={isOpen} name="Alertas" Icon={FaBell} />
                     </Link>
                 </nav>
 
