@@ -4,8 +4,12 @@ import AgregarCategoria from './AgregarCategoria';
 import axios from 'axios'; // Para hacer peticiones HTTP
 import { toast } from 'react-toastify'; // Importar toast
 import 'react-toastify/dist/ReactToastify.css'; // Importar estilos de toast
+import config from './config'
 
 const TablaCategoria = () => {
+
+    const url = config.API_URL
+
     const [datos, setDatos] = useState([]);
     const [busqueda, setBusqueda] = useState("");
     const [mensaje, setMensaje] = useState("");
@@ -22,7 +26,7 @@ const TablaCategoria = () => {
     };
 
     const fechData = () => {
-        fetch("http://localhost:8080/categoria/all")
+        fetch(`${url}/categoria/all}`)
             .then((response) => response.json())
             .then((data) => {
                 if (data.length > 0) {
@@ -49,7 +53,7 @@ const TablaCategoria = () => {
             comentario: editData.comentario
         };
 
-        axios.put(`http://localhost:8080/categoria/update/${editData.id}`, updatedData)
+        axios.put(`${url}/categoria/update/${editData.id}`, updatedData)
             .then(response => {
                 if (response.data === "Categoría actualizada exitosamente") {
                     setMensaje("Categoría actualizada exitosamente");
@@ -70,7 +74,7 @@ const TablaCategoria = () => {
 
     const handleDelete = (id) => {
         // Enviar petición DELETE al servidor
-        axios.delete(`http://localhost:8080/categoria/delete/${id}`)
+        axios.delete(`${url}/categoria/delete/${id}`)
             .then(response => {
                 if (response.data === "Categoría eliminada exitosamente") {
                     setMensaje("Categoría eliminada exitosamente");

@@ -4,8 +4,12 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import { UserContext } from '../components/UserContext.jsx';
+import config from '../components/config'
 
 const Login = () => {
+
+    const url = config.API_URL
+
     const [correo, setCorreo] = useState('');
     const [contrasena, setContrasena] = useState('');
     const [loading, setLoading] = useState(false);
@@ -33,7 +37,7 @@ const Login = () => {
         setLoading(true);
 
         try {
-            const response = await axios.post('http://localhost:8080/usuario/login', {
+            const response = await axios.post(`${url}/usuario/login`, {
                 correo,
                 contrasena
             });

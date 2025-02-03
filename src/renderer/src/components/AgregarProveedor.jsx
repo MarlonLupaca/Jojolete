@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import config from './config'
 
 const AgregarProveedor = ({ toggleProveedor , fetchData = null }) => {
     const [nombre, setNombre] = useState('')
     const [comentario, setComentario] = useState('')
+    const url = config.API_URL
 
     // Función para manejar la validación y el envío de datos
     const handleSubmit = async (e) => {
@@ -23,7 +25,7 @@ const AgregarProveedor = ({ toggleProveedor , fetchData = null }) => {
         }
 
         try {
-            const response = await axios.post('http://localhost:8080/proveedor/save', proveedorData)
+            const response = await axios.post(`${url}/proveedor/save`, proveedorData)
 
             if (response.data === 'Proveedor guardado exitosamente') {
                 toast.success('Proveedor guardado exitosamente')

@@ -2,10 +2,12 @@ import { FaBarcode } from 'react-icons/fa'
 import axios from 'axios'
 import { useState } from 'react'
 import { toast } from 'react-toastify'
+import config from './config'
 
 const AgregarCategoria = ({ toggleCategoria, fechData = null }) => {
     const [nombre, setNombre] = useState('')
     const [comentario, setComentario] = useState('')
+    const url = config.API_URL
 
     // Función para manejar la validación y el envío de datos
     const handleSubmit = async (e) => {
@@ -24,7 +26,7 @@ const AgregarCategoria = ({ toggleCategoria, fechData = null }) => {
         }
 
         try {
-            const response = await axios.post('http://localhost:8080/categoria/save', categoriaData)
+            const response = await axios.post(`${url}/categoria/save`, categoriaData)
 
             if (response.data === 'Categoría guardada exitosamente') {
                 toast.success('Categoría guardada exitosamente')

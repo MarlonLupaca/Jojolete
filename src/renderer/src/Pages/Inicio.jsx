@@ -6,8 +6,11 @@ import DetalleMesas from '../components/DetalleMesas';
 import ModalVenta from '../components/ModalVenta';
 import { toast } from 'react-toastify';
 import { UserContext } from '../components/UserContext.jsx'; 
+import config from '../components/config'
 
 const Inicio = () => {
+
+    const url = config.API_URL
 
     const { user } = useContext(UserContext);
 
@@ -52,11 +55,11 @@ const Inicio = () => {
     }, [mesas]);
 
     useEffect(() => {
-        fetch('http://localhost:8080/productos')
+        fetch(`${url}/productos`)
             .then((response) => response.json())
             .then((data) => setProductosDisponibles(data));
 
-        fetch('http://localhost:8080/platos')
+        fetch(`${url}/platos`)
             .then((response) => response.json())
             .then((data) => setPlatosDisponibles(data));
     }, []);
@@ -200,7 +203,7 @@ const Inicio = () => {
         };
 
         try {
-            const response = await fetch('http://localhost:8080/api/ventas', {
+            const response = await fetch(`${url}/api/ventas`, {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json',

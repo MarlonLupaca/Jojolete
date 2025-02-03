@@ -4,8 +4,12 @@ import Header from '../components/Header';
 import axios from 'axios';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import config from '../components/config'
 
 const Menu = () => {
+
+    const url = config.API_URL
+
     const [platos, setPlatos] = useState([]);
     const [nombre, setNombre] = useState('');
     const [precio, setPrecio] = useState('');
@@ -19,7 +23,7 @@ const Menu = () => {
 
     const obtenerPlatos = async () => {
         try {
-            const response = await axios.get('http://localhost:8080/platos');
+            const response = await axios.get(`${url}/platos`);
             setPlatos(response.data);
         } catch (error) {
             toast.error('Error al obtener los platos');
@@ -34,7 +38,7 @@ const Menu = () => {
         }
 
         try {
-            await axios.post('http://localhost:8080/platos', { nombre, precio: precioNumerico });
+            await axios.post(`${url}/platos`, { nombre, precio: precioNumerico });
             toast.success('Plato guardado exitosamente');
             obtenerPlatos();
             setNombre('');
@@ -46,7 +50,7 @@ const Menu = () => {
 
     const handleEliminarPlato = async (id) => {
         try {
-            await axios.delete(`http://localhost:8080/platos/${id}`);
+            await axios.delete(`${url}/platos/${id}`);
             toast.success('Plato eliminado exitosamente');
             obtenerPlatos();
         } catch (error) {
@@ -61,7 +65,7 @@ const Menu = () => {
         }
 
         try {
-            await axios.put(`http://localhost:8080/platos/${platoSeleccionado.id}`, {
+            await axios.put(`${url}/platos/${platoSeleccionado.id}`, {
                 nombre: nombreEditar,
                 precio: parseFloat(precioEditar),
             });

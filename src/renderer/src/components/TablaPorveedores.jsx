@@ -4,8 +4,12 @@ import AgregarProveedor from './AgregarProveedor';
 import axios from 'axios'; // Para hacer peticiones HTTP
 import { toast } from 'react-toastify'; // Importar toast
 import 'react-toastify/dist/ReactToastify.css'; // Importar estilos de toast
+import config from './config'
 
 const TablaProveedores = () => {
+
+    const url = config.API_URL
+
     // Estado para los datos, la búsqueda y el mensaje de error
     const [datos, setDatos] = useState([]);
     const [busqueda, setBusqueda] = useState("");
@@ -25,7 +29,7 @@ const TablaProveedores = () => {
 
     // Función para obtener los datos de proveedores
     const fetchData = () => {
-        fetch("http://localhost:8080/proveedor/all")
+        fetch(`${url}/proveedor/all`)
             .then((response) => response.json())
             .then((data) => {
                 if (data.length > 0) {
@@ -53,7 +57,7 @@ const TablaProveedores = () => {
             comentario: editData.comentario
         };
 
-        axios.put(`http://localhost:8080/proveedor/update/${editData.id}`, updatedData)
+        axios.put(`${url}/proveedor/update/${editData.id}`, updatedData)
             .then(response => {
                 if (response.data === "Proveedor actualizado exitosamente") {
                     setMensaje("Proveedor actualizado exitosamente");
@@ -74,7 +78,7 @@ const TablaProveedores = () => {
 
     // Función para eliminar proveedor
     const handleDelete = (id) => {
-        axios.delete(`http://localhost:8080/proveedor/delete/${id}`)
+        axios.delete(`${url}/proveedor/delete/${id}`)
             .then(response => {
                 if (response.data === "Proveedor eliminado exitosamente") {
                     setMensaje("Proveedor eliminado exitosamente");

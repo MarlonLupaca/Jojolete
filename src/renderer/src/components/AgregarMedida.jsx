@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import config from './config'
 
 const AgregarMedida = ({ toggleMedida, fetchData = null }) => {
     const [nombre, setNombre] = useState('')
     const [comentario, setComentario] = useState('')
+    const url = config.API_URL
 
     // Función para manejar la validación y el envío de datos
     const handleSubmit = async (e) => {
@@ -23,7 +25,7 @@ const AgregarMedida = ({ toggleMedida, fetchData = null }) => {
         }
 
         try {
-            const response = await axios.post('http://localhost:8080/medida/save', medidaData)
+            const response = await axios.post(`${url}/medida/save`, medidaData)
 
             if (response.data === 'Medida guardada exitosamente') {
                 toast.success('Medida guardada exitosamente')

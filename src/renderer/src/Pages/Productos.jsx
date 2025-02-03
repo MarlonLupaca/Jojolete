@@ -3,8 +3,12 @@ import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import config from '../components/config'
 
 const Productos = () => {
+
+    const url = config.API_URL
+
     const [productos, setProductos] = useState([]);
     const [nombre, setNombre] = useState('');
     const [precio, setPrecio] = useState('');
@@ -16,7 +20,7 @@ const Productos = () => {
 
     // Obtener productos al cargar el componente
     const jalarDatos = () => {
-        fetch('http://localhost:8080/productos')
+        fetch(`${url}/productos`)
             .then((response) => response.json())
             .then((data) => setProductos(data))
             .catch((error) => console.error('Error al obtener productos:', error));
@@ -42,7 +46,7 @@ const Productos = () => {
             stock: stockNumerico,
         };
 
-        fetch('http://localhost:8080/productos', {
+        fetch(`${url}/productos`, {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
@@ -67,7 +71,7 @@ const Productos = () => {
 
     // Eliminar un producto
     const handleEliminarProducto = (id) => {
-        fetch(`http://localhost:8080/productos/${id}`, {
+        fetch(`${url}/productos/${id}`, {
             method: 'DELETE',
         })
             .then((response) => response.text())
@@ -97,7 +101,7 @@ const Productos = () => {
             stock: parseInt(stockEditar),
         };
 
-        fetch(`http://localhost:8080/productos/${productoSeleccionado.id}`, {
+        fetch(`${url}/productos/${productoSeleccionado.id}`, {
             method: 'PUT',
             headers: {
                 'Content-Type': 'application/json',

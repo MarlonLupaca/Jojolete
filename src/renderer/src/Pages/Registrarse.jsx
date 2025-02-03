@@ -1,7 +1,11 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
+import config from '../components/config'
 
 const Registrarse = () => {
+
+  const url = config.API_URL
+
   const [nuevoUsuario, setNuevoUsuario] = useState({
     nombre: "",
     apellido: "",
@@ -58,7 +62,7 @@ const Registrarse = () => {
 
   // Función para guardar el usuario en la base de datos
   const GuardarUsuario = (usuario) => {
-    fetch("http://localhost:8080/usuario/postUsuario", {
+    fetch(`${url}/usuario/postUsuario`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",

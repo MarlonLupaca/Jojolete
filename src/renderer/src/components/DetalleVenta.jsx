@@ -3,8 +3,10 @@ import { FaTrashAlt } from "react-icons/fa";
 import Modal from "./Modal";
 import { toast } from "react-toastify";
 import ExcelJS from "exceljs";  // Importa ExcelJS
+import config from './config'
 
 const quitarTildes = (texto) => {
+
     const mapaAcentos = {
         á: "a", é: "e", í: "i", ó: "o", ú: "u", ñ: "n", Á: "A", É: "E", Í: "I", Ó: "O", Ú: "U", Ñ: "N",
     };
@@ -12,6 +14,9 @@ const quitarTildes = (texto) => {
 };
 
 const DetalleVenta = () => {
+
+    const url = config.API_URL
+
     const [ventas, setVentas] = useState([]);
     const [filtroTexto, setFiltroTexto] = useState("");
     const [filtroFechaDesde, setFiltroFechaDesde] = useState("");
@@ -23,8 +28,9 @@ const DetalleVenta = () => {
     // Cargar datos desde el backend
     useEffect(() => {
         const fetchVentas = async () => {
+
             try {
-                const response = await fetch("http://localhost:8080/api/ventas");
+                const response = await fetch(`${url}/api/ventas`);
                 const data = await response.json();
                 setVentas(data);
             } catch (error) {
@@ -73,7 +79,7 @@ const DetalleVenta = () => {
 
     const eliminarVenta = async (idVenta) => {
         try {
-            const respuesta = await fetch(`http://localhost:8080/api/ventas/${idVenta}`, {
+            const respuesta = await fetch(`${url}/api/ventas/${idVenta}`, {
                 method: "DELETE",
             });
     

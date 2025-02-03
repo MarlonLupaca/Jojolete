@@ -3,8 +3,12 @@ import axios from 'axios';
 import { toast } from 'react-toastify';
 import { FaBarcode } from 'react-icons/fa';
 import 'react-toastify/dist/ReactToastify.css';
+import config from './config'
 
 const EditarProducto = ({ toggleEditar, codigo, fetchProductos }) => {
+
+    const url = config.API_URL
+
     const [producto, setProducto] = useState({
         nombre: '',
         categoria: '',
@@ -28,7 +32,7 @@ const EditarProducto = ({ toggleEditar, codigo, fetchProductos }) => {
     useEffect(() => {
         const fetchProducto = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/producto/find/${codigo}`);
+                const response = await axios.get(`${url}/producto/find/${codigo}`);
                 setProducto(response.data);
             } catch (error) {
                 toast.error('Error al obtener los datos del producto.');
@@ -38,19 +42,19 @@ const EditarProducto = ({ toggleEditar, codigo, fetchProductos }) => {
         // Solicitudes para cargar los datos de las categorías, unidades, proveedores y ubicaciones
         const fetchData = async () => {
             try {
-                const categoriasResponse = await fetch("http://localhost:8080/categoria/all");
+                const categoriasResponse = await fetch(`${url}/categoria/all`);
                 const categoriasData = await categoriasResponse.json();
                 setCategorias(categoriasData);
 
-                const unidadesResponse = await fetch("http://localhost:8080/medida/all");
+                const unidadesResponse = await fetch(`${url}/medida/all`);
                 const unidadesData = await unidadesResponse.json();
                 setUnidades(unidadesData);
 
-                const proveedoresResponse = await fetch("http://localhost:8080/proveedor/all");
+                const proveedoresResponse = await fetch(`${url}/proveedor/all`);
                 const proveedoresData = await proveedoresResponse.json();
                 setProveedores(proveedoresData);
 
-                const ubicacionesResponse = await fetch("http://localhost:8080/ubicacion/all");
+                const ubicacionesResponse = await fetch(`${url}/ubicacion/all`);
                 const ubicacionesData = await ubicacionesResponse.json();
                 setUbicaciones(ubicacionesData);
             } catch (error) {
@@ -72,7 +76,7 @@ const EditarProducto = ({ toggleEditar, codigo, fetchProductos }) => {
     // Actualizar el producto
     const handleActualizar = async () => {
         try {
-            const response = await axios.put(`http://localhost:8080/producto/update/${codigo}`, producto);
+            const response = await axios.put(`${url}/producto/update/${codigo}`, producto);
             if (response.data === 'Producto actualizado exitosamente') {
                 toast.success('Producto actualizado exitosamente');
                 fetchProductos();

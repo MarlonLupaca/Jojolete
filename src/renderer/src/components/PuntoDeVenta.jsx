@@ -2,8 +2,12 @@ import React, { useState } from "react";
 import axios from "axios";
 import { toast } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
+import config from './config'
 
 const PuntoDeVenta = ({ productos, setProductosVenta }) => {
+
+  const url = config.API_URL
+
   const [efectivo, setEfectivo] = useState("");
   
   // Calcula el total de los productos
@@ -37,7 +41,7 @@ const PuntoDeVenta = ({ productos, setProductosVenta }) => {
 
     try {
       console.log(data)
-      await axios.post("http://localhost:8080/api/ventas", data);
+      await axios.post(`${url}/api/ventas}`, data);
       toast.success("Venta realizada con éxito.");
       setProductosVenta([]);
       setEfectivo("");

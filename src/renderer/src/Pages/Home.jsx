@@ -5,8 +5,12 @@ import { FaBarcode } from 'react-icons/fa';
 import PuntoDeVenta from '../components/PuntoDeVenta';
 import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
+import config from '../components/config'
 
 const Home = () => {
+
+    const url = config.API_URL
+
     const [codigo, setCodigo] = useState(''); // Código ingresado
     const [producto, setProducto] = useState(null); // Producto encontrado
     const [productosVenta, setProductosVenta] = useState([]); // Productos en la tabla de venta
@@ -41,7 +45,7 @@ const Home = () => {
         }
     
         try {
-            const response = await fetch(`http://localhost:8080/producto/find/${valor}`);
+            const response = await fetch(`${url}/producto/find/${valor}`);
             if (response.ok) {
                 const text = await response.text();
                 if (text) {

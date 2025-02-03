@@ -4,8 +4,12 @@ import AgregarMedida from './AgregarMedida';
 import axios from 'axios'; // Para hacer peticiones HTTP
 import { toast } from 'react-toastify'; // Importar toast
 import 'react-toastify/dist/ReactToastify.css'; // Importar estilos de toast
+import config from './config'
 
 const TablaMedida = () => {
+
+    const url = config.API_URL
+
     const [datos, setDatos] = useState([]);
     const [busqueda, setBusqueda] = useState("");
     const [mensaje, setMensaje] = useState("");
@@ -22,7 +26,7 @@ const TablaMedida = () => {
     };
 
     const fetchData = () => {
-        fetch("http://localhost:8080/medida/all")
+        fetch(`${url}/medida/all`)
             .then((response) => response.json())
             .then((data) => {
                 if (data.length > 0) {
@@ -49,7 +53,7 @@ const TablaMedida = () => {
             comentario: editData.comentario
         };
 
-        axios.put(`http://localhost:8080/medida/update/${editData.id}`, updatedData)
+        axios.put(`${url}/medida/update/${editData.id}`, updatedData)
             .then(response => {
                 if (response.data === "Medida actualizada exitosamente") {
                     setMensaje("Medida actualizada exitosamente");
@@ -70,7 +74,7 @@ const TablaMedida = () => {
 
     const handleDelete = (id) => {
         // Enviar petición DELETE al servidor
-        axios.delete(`http://localhost:8080/medida/delete/${id}`)
+        axios.delete(`${url}/medida/delete/${id}`)
             .then(response => {
                 if (response.data === "Medida eliminada exitosamente") {
                     setMensaje("Medida eliminada exitosamente");

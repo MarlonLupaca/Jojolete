@@ -4,8 +4,13 @@ import AgregarUbicacion from './AgregarUbicacion';
 import axios from 'axios'; // Para hacer peticiones HTTP
 import { toast } from 'react-toastify'; // Importar toast
 import 'react-toastify/dist/ReactToastify.css'; // Importar estilos de toast
+import config from './config'
+
 
 const TablaUbicacion = () => {
+
+    const url = config.API_URL
+
     const [datos, setDatos] = useState([]);
     const [busqueda, setBusqueda] = useState("");
     const [mensaje, setMensaje] = useState("");
@@ -22,7 +27,7 @@ const TablaUbicacion = () => {
     };
 
     const fetchData = () => {
-        fetch("http://localhost:8080/ubicacion/all")
+        fetch(`${url}/ubicacion/all`)
             .then((response) => response.json())
             .then((data) => {
                 if (data.length > 0) {
@@ -49,7 +54,7 @@ const TablaUbicacion = () => {
             comentario: editData.comentario
         };
 
-        axios.put(`http://localhost:8080/ubicacion/update/${editData.id}`, updatedData)
+        axios.put(`${url}/ubicacion/update/${editData.id}`, updatedData)
             .then(response => {
                 if (response.data === "Ubicación actualizada exitosamente") {
                     setMensaje("Ubicación actualizada exitosamente");
@@ -70,7 +75,7 @@ const TablaUbicacion = () => {
 
     const handleDelete = (id) => {
         // Enviar petición DELETE al servidor
-        axios.delete(`http://localhost:8080/ubicacion/delete/${id}`)
+        axios.delete(`${url}/ubicacion/delete/${id}`)
             .then(response => {
                 if (response.data === "Ubicación eliminada exitosamente") {
                     setMensaje("Ubicación eliminada exitosamente");

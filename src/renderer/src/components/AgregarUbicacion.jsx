@@ -1,8 +1,12 @@
 import React, { useState } from 'react'
 import axios from 'axios'
 import { toast } from 'react-toastify'
+import config from './config'
 
 const AgregarUbicacion = ({ toggleUbicacion , fetchData = null }) => {
+
+    const url = config.API_URL
+
     const [nombre, setNombre] = useState('')
     const [comentario, setComentario] = useState('')
 
@@ -23,7 +27,7 @@ const AgregarUbicacion = ({ toggleUbicacion , fetchData = null }) => {
         }
 
         try {
-            const response = await axios.post('http://localhost:8080/ubicacion/save', ubicacionData)
+            const response = await axios.post(`${url}/ubicacion/save}`, ubicacionData)
 
             if (response.data === 'Ubicación guardada exitosamente') {
                 toast.success('Ubicación guardada exitosamente')

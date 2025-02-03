@@ -1,7 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
+import config from './config'
 
 const ProductoModal = ({ toggleDetalle, codigo }) => {
+
+    const url = config.API_URL
+
     const [producto, setProducto] = useState(null);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
@@ -11,7 +15,7 @@ const ProductoModal = ({ toggleDetalle, codigo }) => {
         // Función para obtener los datos del producto
         const fetchProducto = async () => {
             try {
-                const response = await axios.get(`http://localhost:8080/producto/find/${codigo}`);
+                const response = await axios.get(`${url}/producto/find/${codigo}`);
                 setProducto(response.data);
                 setLoading(false);
             } catch (error) {

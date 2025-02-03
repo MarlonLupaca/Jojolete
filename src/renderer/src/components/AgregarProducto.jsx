@@ -2,8 +2,12 @@ import { useEffect, useState } from "react";
 import { FaBarcode } from "react-icons/fa";
 import axios from "axios";
 import { toast } from "react-toastify"; // Importa el toast para las notificaciones
+import config from './config'
 
 const AgregarProducto = ({ toggleAgregar, addProducto }) => {
+
+    const url = config.API_URL
+
     const [formData, setFormData] = useState({
         codigo: "",
         nombre: "",
@@ -57,7 +61,7 @@ const AgregarProducto = ({ toggleAgregar, addProducto }) => {
 
         try {
             const response = await axios.post(
-                "http://localhost:8080/producto/save",
+                `${url}/producto/save`,
                 formData
             );
             if (response.data === "Producto guardado exitosamente") {
@@ -89,10 +93,10 @@ const AgregarProducto = ({ toggleAgregar, addProducto }) => {
         const fetchData = async () => {
             try {
                 const [catRes, unitRes, provRes, ubiRes] = await Promise.all([
-                    fetch("http://localhost:8080/categoria/all").then((res) => res.json()),
-                    fetch("http://localhost:8080/medida/all").then((res) => res.json()),
-                    fetch("http://localhost:8080/proveedor/all").then((res) => res.json()),
-                    fetch("http://localhost:8080/ubicacion/all").then((res) => res.json()),
+                    fetch(`${url}/categoria/all`).then((res) => res.json()),
+                    fetch(`${url}/medida/all`).then((res) => res.json()),
+                    fetch(`${url}/proveedor/all`).then((res) => res.json()),
+                    fetch(`${url}/ubicacion/all`).then((res) => res.json()),
                 ]);
                 setCategorias(catRes);
                 setUnidades(unitRes);

@@ -5,8 +5,12 @@ import { toast } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
 import ProductoModal from './ProductoModal';
 import EditarProducto from './EditarProducto';
+import config from './config'
 
 const BotonOpciones = ({ codigo, fetchProductos }) => {
+
+    const url = config.API_URL
+
     const [opciones, setOpciones] = useState(false);
     const [VerDetalle, setVerDetalle] = useState(false)
 
@@ -25,7 +29,7 @@ const BotonOpciones = ({ codigo, fetchProductos }) => {
 
     const eliminarProducto = async () => {
         try {
-            const response = await axios.delete(`http://localhost:8080/producto/delete/${codigo}`);
+            const response = await axios.delete(`${url}/producto/delete/${codigo}`);
             if (response.data === "Producto eliminado exitosamente") {
                 toast.success("Producto eliminado exitosamente");
                 fetchProductos();

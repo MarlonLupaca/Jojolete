@@ -3,6 +3,7 @@ import { FaTrashAlt } from "react-icons/fa";
 import Modal from "./Modal";
 import ExcelJS from "exceljs";
 import { toast } from "react-toastify";
+import config from './config'
 
 const quitarTildes = (texto) => {
     const mapaAcentos = {
@@ -13,6 +14,9 @@ const quitarTildes = (texto) => {
 };
 
 const DetalleEntrada = () => {
+
+    const url = config.API_URL
+
     const [ventas, setVentas] = useState([]);
     const [filtroTexto, setFiltroTexto] = useState("");
     const [filtroFechaDesde, setFiltroFechaDesde] = useState("");
@@ -22,6 +26,7 @@ const DetalleEntrada = () => {
     const [productosModal, setProductosModal] = useState([]);
     const [alertMessage, setAlertMessage] = useState("");
     const [isDeleting, setIsDeleting] = useState(false);
+    
 
     useEffect(() => {
         fetchVentas();
@@ -29,7 +34,8 @@ const DetalleEntrada = () => {
 
     const fetchVentas = async () => {
         try {
-            const response = await fetch("http://localhost:8080/api/ventas");
+
+            const response = await fetch(`${url}/api/ventas`);
             const data = await response.json();
             setVentas(data);
             console.log(data)
@@ -43,7 +49,7 @@ const DetalleEntrada = () => {
         if (window.confirm("¿Está seguro que desea eliminar esta venta?")) {
             setIsDeleting(true);
             try {
-                const response = await fetch(`http://localhost:8080/api/ventas/${id}`, {
+                const response = await fetch(`${url}/api/ventas/${id}`, {
                     method: 'DELETE'
                 });
                 
