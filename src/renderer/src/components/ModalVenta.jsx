@@ -21,13 +21,14 @@ const ModalVenta = ({
         p.nombre.toLowerCase().includes(buscadorProducto.toLowerCase())
     );
 
-    const renderTarjetas = (items) => {
+    const renderTarjetas = (items, name) => {
         return items.map((item) => (
             <div
                 key={item.id}
-                className="border border-gray-600 p-4 m-2 cursor-pointer hover:bg-gray-200"
+                className="border rounded-lg w-fit border-gray-600 p-4 m-2 cursor-pointer hover:bg-[#00000034] text-[15px]"
                 onClick={() => agregarProducto(item)}
             >
+                <img src={name} alt="platos" className='w-[170px] mb-2 opacity-60' />
                 <h4 className="font-semibold">{item.nombre}</h4>
                 <p>Precio: S/ {item.precio.toFixed(2)}</p>
                 {item.stock && <p>Stock: {item.stock}</p>}
@@ -37,20 +38,20 @@ const ModalVenta = ({
 
     return (
         <div className="fixed flex justify-center items-center w-screen h-screen bg-[#000000bc] top-0 left-0 z-[100]">
-            <div className="bg-secundario p-6 h-[80vh] rounded-lg w-2/3">
+            <div className="bg-secundario p-6 h-[90vh] rounded-lg w-[1200px]">
                 <h2 className="text-lg font-bold mb-4">Gestionar Productos</h2>
-                <div className="flex gap-4">
-                    <div className="w-1/2">
+                <div className="flex gap-4 h-[70vh]">
+                    <div className="w-1/2 h-full">
                         <h3 className="text-md font-semibold mb-2">Buscar {seleccionado === 'producto' ? 'Producto' : 'Plato'}</h3>
                         <input
                             type="text"
-                            className="w-[480px] px-4 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario"
+                            className="mb-3 w-full text-[16px] px-3 py-1 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
                             placeholder={`Buscar ${seleccionado === 'producto' ? 'producto' : 'plato'}...`}
                             value={buscadorProducto}
                             onChange={(e) => setBuscadorProducto(e.target.value)}
                         />
                         <select
-                            className="mt-2 w-full px-4 py-1 border border-acento bg-slate-200 text-black rounded-lg"
+                            className="w-full text-[16px] px-3 py-1 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
                             onChange={(e) => setSeleccionado(e.target.value)}
                             value={seleccionado}
                         >
@@ -58,16 +59,16 @@ const ModalVenta = ({
                             <option value="plato">Plato</option>
                         </select>
 
-                        <div className="mt-4 max-h-[300px] overflow-y-auto">
+                        <div className="mt-4 max-h-[54vh] grid grid-cols-3 overflow-y-auto">
                             {seleccionado === 'producto'
-                                ? renderTarjetas(productosFiltrados)
-                                : renderTarjetas(platosFiltrados)}
+                                ? renderTarjetas(productosFiltrados, "./producto.jpg")
+                                : renderTarjetas(platosFiltrados, "./platos_peruanos.jpg")}
                         </div>
                     </div>
 
-                    <div className="w-1/2">
+                    <div className="w-1/2 ">
                         <h3 className="text-md font-semibold mb-2">Productos de la Mesa</h3>
-                        <div className="overflow-auto h-[50vh] border rounded-lg border-gray-600">
+                        <div className="overflow-auto h-[58vh] border rounded-lg border-gray-600">
                             <table className="w-full border-collapse">
                                 <thead className="bg-gray-600">
                                     <tr>
@@ -84,7 +85,7 @@ const ModalVenta = ({
                                             <td className="px-4 py-2 text-center">
                                                 <input
                                                     type="number"
-                                                    className="w-[64px] px-3 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario"
+                                                    className="w-[64px] text-[14px] px-3 py-1 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
                                                     min="1"
                                                     value={detalle.cantidad}
                                                     onChange={(e) => actualizarCantidad(index, parseInt(e.target.value, 10))}
@@ -107,7 +108,7 @@ const ModalVenta = ({
                 <div className="flex justify-end">
                     <button
                         onClick={() => setMostrarModal(false)}
-                        className="mt-4 bg-cuarto text-white px-4 py-2 rounded-md hover:bg-red-700"
+                        className="mt-4 bg-cuarto text-[14px] font-[700] bg-opacity-70 text-white px-4 py-2 rounded-md hover:bg-red-700"
                     >
                         Cerrar
                     </button>

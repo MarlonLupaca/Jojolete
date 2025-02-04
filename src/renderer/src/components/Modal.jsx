@@ -31,7 +31,7 @@ const Modal = ({ productos, onClose }) => {
                         </tbody>
                     </table>
                 </div>
-                <button onClick={onClose} className="mt-4 px-4 py-2 bg-cuarto text-white rounded-lg">
+                <button onClick={onClose} className="mt-4 px-4 py-2 text-[14px] font-[700] bg-cuarto bg-opacity-70 hover:bg-red-700 text-white rounded-lg">
                     Cerrar
                 </button>
             </div>

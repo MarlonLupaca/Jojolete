@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { toast } from 'react-toastify';
 import config from '../components/config'
+import { Link } from 'react-router-dom';
 
 const Registrarse = () => {
 
@@ -207,9 +208,9 @@ const Registrarse = () => {
           </form>
 
           <div className="mt-4 text-center">
-            <a href="/" className="text-sm text-terceario hover:underline">
+            <Link to="/login" className="text-sm text-terceario hover:underline">
               ¿Ya tienes una cuenta? Inicia sesión
-            </a>
+            </Link>
           </div>
         </div>
       </div>

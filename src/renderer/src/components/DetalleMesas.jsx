@@ -18,14 +18,14 @@ const DetalleMesas = ({
                         <div className="space-x-2">
                             <button
                                 onClick={() => setMostrarModal(true)}
-                                className="bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-blue-700"
+                                className="bg-blue-500 bg-opacity-70 text-[14px] font-[700] text-white px-4 py-2 rounded-md hover:bg-blue-700"
                             >
                                 Gestionar Productos
                             </button>
                             {mesaSeleccionada.detalles.length > 0 && (
                                 <button
                                     onClick={() => guardarVenta(mesaSeleccionada.id)}
-                                    className="bg-green-500 text-white px-4 py-2 rounded-md hover:bg-green-700"
+                                    className="bg-green-500 bg-opacity-70 text-[14px] font-[700] text-white px-4 py-2 rounded-md hover:bg-green-700"
                                 >
                                     Guardar Venta
                                 </button>
@@ -51,7 +51,7 @@ const DetalleMesas = ({
                                         <td className="px-4 py-2 text-center">
                                             <input
                                                 type="number"
-                                                className="w-[64px] px-3 py-1 border border-acento bg-slate-200 text-black rounded-lg focus:outline-none focus:ring-secundario"
+                                                className="w-[64px] text-[14px] px-3 py-1 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
                                                 min="1"
                                                 value={detalle.cantidad}
                                                 onChange={(e) =>

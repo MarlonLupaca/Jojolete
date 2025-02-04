@@ -197,7 +197,7 @@ const DetalleEntrada = () => {
                             value={filtroTexto}
                             onChange={(e) => setFiltroTexto(e.target.value)}
                             placeholder="ID de Venta"
-                            className="px-3 py-[3px] border border-acento text-[14px] bg-slate-200 w-[200px] text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-terceario"
+                            className="w-full text-[14px] px-3 py-1 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
                         />
                     </div>
                     <div className="flex flex-col gap-2">
@@ -210,7 +210,7 @@ const DetalleEntrada = () => {
                             value={filtroMesera}
                             onChange={(e) => setFiltroMesera(e.target.value)}
                             placeholder="Nombre de Mesera"
-                            className="px-3 py-[3px] border border-acento text-[14px] bg-slate-200 w-[200px] text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-terceario"
+                            className="w-full text-[14px] px-3 py-1 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
                         />
                     </div>
                     <div className="flex flex-col gap-2">
@@ -222,7 +222,7 @@ const DetalleEntrada = () => {
                             type="date"
                             value={filtroFechaDesde}
                             onChange={(e) => setFiltroFechaDesde(e.target.value)}
-                            className="px-3 py-[3px] border border-acento text-[14px] bg-slate-200 w-[150px] text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-terceario"
+                            className="w-full text-[14px] px-3 py-1 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
                         />
                     </div>
                     <div className="flex flex-col gap-2">
@@ -234,14 +234,14 @@ const DetalleEntrada = () => {
                             type="date"
                             value={filtroFechaHasta}
                             onChange={(e) => setFiltroFechaHasta(e.target.value)}
-                            className="px-3 py-[3px] border border-acento text-[14px] bg-slate-200 w-[150px] text-black rounded-lg focus:outline-none focus:ring-2 focus:ring-terceario"
+                            className="w-full text-[14px] px-3 py-1 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
                         />
                     </div>
                 </div>
 
                 <button
                     onClick={limpiarFiltros}
-                    className="mt-4 px-4 py-2 bg-cuarto text-[14px] font-[700] text-white rounded-lg hover:bg-red-600 transition-all"
+                    className="mt-4 px-4 py-2 bg-cuarto bg-opacity-70 text-[14px] font-[700] text-white rounded-lg hover:bg-red-700 transition-all"
                 >
                     Limpiar Filtros
                 </button>
@@ -303,7 +303,7 @@ const DetalleEntrada = () => {
                 </div>
                 <button
                     onClick={descargarExcel}
-                    className="px-4 py-2 bg-terceario text-white text-[14px] font-[700] rounded-lg hover:bg-acento transition-all"
+                    className="px-4 py-2 bg-terceario bg-opacity-70 text-white text-[14px] font-[700] rounded-lg hover:bg-blue-700 transition-all"
                 >
                     Descargar Excel
                 </button>

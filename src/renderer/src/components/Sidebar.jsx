@@ -2,7 +2,8 @@ import React, { useState } from 'react';
 import { FaBoxes,FaAngleDoubleRight, FaRegClipboard ,FaGraduationCap, FaHome, FaExchangeAlt, FaListAlt, FaWarehouse, FaUserAlt, FaBell, FaSignOutAlt } from 'react-icons/fa';
 import { MdRestaurantMenu } from "react-icons/md";
 import { Link } from 'react-router-dom';
-import ItemsSidebar from './ItemsSidebar';
+import { BsBell } from "react-icons/bs";
+import ItemsSidebar from './ItemsSidebar';  
 
 const Sidebar = () => {
     const [isOpen, setIsOpen] = useState(true);
@@ -51,6 +52,9 @@ const Sidebar = () => {
 
                     <Link to="/Entradas">
                         <ItemsSidebar isOpen={isOpen} name="Entradas/Salidas" Icon={FaExchangeAlt} />
+                    </Link>
+                    <Link to="/alertas">
+                        <ItemsSidebar isOpen={isOpen} name="Alertas" Icon={BsBell} />
                     </Link>
                 </nav>
 

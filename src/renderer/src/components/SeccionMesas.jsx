@@ -11,8 +11,8 @@ const SeccionMesas = ({ setMesaSeleccionada, agregarMesa, eliminarMesa, mesas })
                         key={mesa.id}
                         className={`p-4 rounded-md text-center cursor-pointer transition-transform transform hover:scale-105 ${
                             mesa.estado === 'Ocupada'
-                                ? 'bg-cuarto text-white'
-                                : 'bg-sexto text-white'
+                                ? 'bg-cuarto bg-opacity-70 hover:bg-red-700 text-white'
+                                : 'bg-sexto bg-opacity-70 hover:bg-green-700 text-white'
                         }`}
                         onClick={() => setMesaSeleccionada(mesa)}
                     >
@@ -23,13 +23,13 @@ const SeccionMesas = ({ setMesaSeleccionada, agregarMesa, eliminarMesa, mesas })
             <div className="absolute bottom-6 font-[700] w-full text-[14px] left-0 flex justify-center items-center gap-4">
                 <button
                     onClick={agregarMesa}
-                    className="bg-sexto text-white px-3 py-2 rounded-md hover:bg-green-700"
+                    className="bg-sexto bg-opacity-70 text-white px-3 py-2 rounded-md hover:bg-green-700"
                 >
                     Agregar Mesa
                 </button>
                 <button
                     onClick={eliminarMesa}
-                    className="bg-cuarto text-white px-3 py-2 rounded-md hover:bg-red-700"
+                    className="bg-cuarto bg-opacity-70 text-white px-3 py-2 rounded-md hover:bg-red-700"
                 >
                     Eliminar Mesa
                 </button>

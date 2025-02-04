@@ -139,7 +139,7 @@ const Productos = () => {
                             <label className="block mb-1">Nombre del Producto</label>
                             <input
                                 type="text"
-                                className="w-full px-4 py-2 border border-gray-600 rounded-lg bg-white text-black"
+                                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
                                 value={nombre}
                                 onChange={(e) => setNombre(e.target.value)}
                                 placeholder="Nombre del producto"
@@ -150,7 +150,7 @@ const Productos = () => {
                                 <label className="block mb-1">Precio (S/)</label>
                                 <input
                                     type="number"
-                                    className="w-full px-4 py-2 border border-gray-600 rounded-lg bg-white text-black"
+                                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
                                     value={precio}
                                     onChange={(e) => setPrecio(e.target.value)}
                                     placeholder="Precio del producto"
@@ -161,7 +161,7 @@ const Productos = () => {
                                 <label className="block mb-1">Stock</label>
                                 <input
                                     type="number"
-                                    className="w-full px-4 py-2 border border-gray-600 rounded-lg bg-white text-black"
+                                    className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
                                     value={stock}
                                     onChange={(e) => setStock(e.target.value)}
                                     placeholder="Stock del producto"
@@ -172,7 +172,7 @@ const Productos = () => {
                         
                         <button
                             onClick={handleAgregarProducto}
-                            className="w-full bg-green-500 text-white px-4 py-2 rounded-md hover:bg-opacity-80"
+                            className="w-full bg-green-500 text-[14px] font-[700] bg-opacity-70 text-white px-4 py-2 rounded-md hover:bg-green-700"
                         >
                             Agregar Producto
                         </button>
@@ -183,7 +183,7 @@ const Productos = () => {
                                     <label className="block mb-1">Nombre del Producto</label>
                                     <input
                                         type="text"
-                                        className="w-full px-4 py-2 border border-gray-600 rounded-lg bg-white text-black"
+                                        className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
                                         value={nombreEditar}
                                         onChange={(e) => setNombreEditar(e.target.value)}
                                         placeholder="Nombre del producto"
@@ -194,7 +194,7 @@ const Productos = () => {
                                         <label className="block mb-1">Precio (S/)</label>
                                         <input
                                             type="number"
-                                            className="w-full px-4 py-2 border border-gray-600 rounded-lg bg-white text-black"
+                                            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
                                             value={precioEditar}
                                             onChange={(e) => setPrecioEditar(e.target.value)}
                                             placeholder="Precio del producto"
@@ -205,7 +205,7 @@ const Productos = () => {
                                         <label className="block mb-1">Stock</label>
                                         <input
                                             type="number"
-                                            className="w-full px-4 py-2 border border-gray-600 rounded-lg bg-white text-black"
+                                            className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
                                             value={stockEditar}
                                             onChange={(e) => setStockEditar(e.target.value)}
                                             placeholder="Stock del producto"
@@ -216,7 +216,7 @@ const Productos = () => {
                                 
                                 <button
                                     onClick={handleActualizarProducto}
-                                    className="w-full bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-opacity-80"
+                                    className="w-full bg-blue-500 text-[14px] font-[700] bg-opacity-70 text-white px-4 py-2 rounded-md hover:bg-blue-700"
                                 >
                                     Actualizar Producto
                                 </button>
@@ -251,13 +251,13 @@ const Productos = () => {
                                                         setPrecioEditar(producto.precio.toString());
                                                         setStockEditar(producto.stock.toString());
                                                     }}
-                                                    className="bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-700 mx-1"
+                                                    className="text-[15px] bg-blue-500 bg-opacity-70 text-white px-2 py-1 rounded-md hover:bg-blue-700 mx-1"
                                                 >
                                                     Editar
                                                 </button>
                                                 <button
                                                     onClick={() => handleEliminarProducto(producto.id)}
-                                                    className="bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-700 mx-1"
+                                                    className=" text-[15px] bg-red-500 bg-opacity-70 text-white px-2 py-1 rounded-md hover:bg-red-700 mx-1"
                                                 >
                                                     Eliminar
                                                 </button>

@@ -37,6 +37,7 @@ function App() {
         />
         <Routes>
           <Route path="/" element={<Login />} />
+          <Route path="/login" element={<Login />} />
           <Route path="/registrarse" element={<Registrarse />} />
           <Route path="/inicio" element={<Inicio />} />
           <Route path="/home" element={<Home />} />

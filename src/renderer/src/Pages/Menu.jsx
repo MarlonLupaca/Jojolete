@@ -89,15 +89,25 @@ const Menu = () => {
                         <h2 className="text-lg font-bold mb-4">Agregar Plato</h2>
                         <div className="mb-4">
                             <label className="block mb-1">Nombre del Plato</label>
-                            <input type="text" className="w-full px-4 py-2 border border-gray-600 rounded-lg bg-white text-black"
-                                value={nombre} onChange={(e) => setNombre(e.target.value)} placeholder="Nombre del plato" />
+                            <input 
+                                type="text" 
+                                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
+                                value={nombre} 
+                                onChange={(e) => setNombre(e.target.value)} 
+                                placeholder="Nombre del plato" 
+                            />
                         </div>
                         <div className="mb-4">
                             <label className="block mb-1">Precio (S/)</label>
-                            <input type="number" className="w-full px-4 py-2 border border-gray-600 rounded-lg bg-white text-black"
-                                value={precio} onChange={(e) => setPrecio(e.target.value)} placeholder="Precio del plato" min="0" />
+                            <input 
+                                type="number" 
+                                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
+                                value={precio} 
+                                onChange={(e) => setPrecio(e.target.value)} 
+                                placeholder="Precio del plato" min="0" 
+                            />
                         </div>
-                        <button onClick={handleAgregarPlato} className="w-full bg-green-500 text-white px-4 py-2 rounded-md hover:bg-opacity-80">
+                        <button onClick={handleAgregarPlato} className="text-[14px] font-[700] w-full bg-green-500 bg-opacity-70 text-white px-4 py-2 rounded-md hover:bg-green-700">
                             Agregar Plato
                         </button>
                         <h2 className="text-lg font-bold mt-8 mb-4">Editar Plato</h2>
@@ -105,15 +115,25 @@ const Menu = () => {
                             <>
                                 <div className="mb-4">
                                     <label className="block mb-1">Nombre del Plato</label>
-                                    <input type="text" className="w-full px-4 py-2 border border-gray-600 rounded-lg bg-white text-black"
-                                        value={nombreEditar} onChange={(e) => setNombreEditar(e.target.value)} placeholder="Nombre del plato" />
+                                    <input 
+                                        type="text"
+                                        className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
+                                        value={nombreEditar} 
+                                        onChange={(e) => setNombreEditar(e.target.value)} 
+                                        placeholder="Nombre del plato" 
+                                    />
                                 </div>
                                 <div className="mb-4">
                                     <label className="block mb-1">Precio (S/)</label>
-                                    <input type="number" className="w-full px-4 py-2 border border-gray-600 rounded-lg bg-white text-black"
-                                        value={precioEditar} onChange={(e) => setPrecioEditar(e.target.value)} placeholder="Precio del plato" min="0" />
+                                    <input 
+                                        type="number" 
+                                        className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
+                                        value={precioEditar} 
+                                        onChange={(e) => setPrecioEditar(e.target.value)} 
+                                        placeholder="Precio del plato" 
+                                        min="0" />
                                 </div>
-                                <button onClick={handleActualizarPlato} className="w-full bg-blue-500 text-white px-4 py-2 rounded-md hover:bg-opacity-80">
+                                <button onClick={handleActualizarPlato} className="text-[14px] font-[700] w-full bg-blue-500 bg-opacity-70 text-white px-4 py-2 rounded-md hover:bg-blue-700">
                                     Actualizar Plato
                                 </button>
                             </>
@@ -137,10 +157,10 @@ const Menu = () => {
                                         <tr key={plato.id} className="border-b-2 border-gray-600">
                                             <td className="px-4 py-2">{plato.nombre}</td>
                                             <td className="px-4 py-2 text-right">S/ {plato.precio.toFixed(2)}</td>
-                                            <td className="px-4 py-2 text-center">
+                                            <td className="px-4 py-2 text-center text-[14px]">
                                                 <button onClick={() => { setPlatoSeleccionado(plato); setNombreEditar(plato.nombre); setPrecioEditar(plato.precio.toString()); }}
-                                                    className="bg-blue-500 text-white px-2 py-1 rounded-md hover:bg-blue-700 mx-1">Editar</button>
-                                                <button onClick={() => handleEliminarPlato(plato.id)} className="bg-red-500 text-white px-2 py-1 rounded-md hover:bg-red-700 mx-1">Eliminar</button>
+                                                    className="bg-blue-500 bg-opacity-70 text-[14px] text-white px-2 py-1 rounded-md hover:bg-blue-700 mx-1">Editar</button>
+                                                <button onClick={() => handleEliminarPlato(plato.id)} className="text-[14px]  bg-red-500 text-white px-2 bg-opacity-70 py-1 rounded-md hover:bg-red-700 mx-1">Eliminar</button>
                                             </td>
                                         </tr>
                                     ))}
