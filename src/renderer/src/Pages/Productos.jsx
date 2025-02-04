@@ -3,13 +3,13 @@ import Sidebar from '../components/Sidebar';
 import Header from '../components/Header';
 import { toast, ToastContainer } from 'react-toastify';
 import 'react-toastify/dist/ReactToastify.css';
-import config from '../components/config'
+import config from '../components/config';
 
 const Productos = () => {
-
-    const url = config.API_URL
+    const url = config.API_URL;
 
     const [productos, setProductos] = useState([]);
+    const [productosOriginal, setProductosOriginal] = useState([]);
     const [nombre, setNombre] = useState('');
     const [precio, setPrecio] = useState('');
     const [stock, setStock] = useState('');
@@ -17,18 +17,40 @@ const Productos = () => {
     const [precioEditar, setPrecioEditar] = useState('');
     const [stockEditar, setStockEditar] = useState('');
     const [productoSeleccionado, setProductoSeleccionado] = useState(null);
+    const [busqueda, setBusqueda] = useState('');
+    
+    // Confirmación states
+    const [mostrarConfirmacionEliminar, setMostrarConfirmacionEliminar] = useState(false);
+    const [productoAEliminar, setProductoAEliminar] = useState(null);
 
-    // Obtener productos al cargar el componente
     const jalarDatos = () => {
         fetch(`${url}/productos`)
             .then((response) => response.json())
-            .then((data) => setProductos(data))
+            .then((data) => {
+                const productosActivos = data.filter((producto) => producto.estado === true);
+                setProductos(productosActivos);
+                setProductosOriginal(productosActivos);
+            })
             .catch((error) => console.error('Error al obtener productos:', error));
-    }
+    };
 
     useEffect(() => {
         jalarDatos();
     }, []);
+
+    // Búsqueda de productos
+    const handleBuscarProducto = (textoBusqueda) => {
+        setBusqueda(textoBusqueda);
+        if (!textoBusqueda) {
+            setProductos(productosOriginal);
+            return;
+        }
+
+        const productosFiltrados = productosOriginal.filter(producto => 
+            producto.nombre.toLowerCase().includes(textoBusqueda.toLowerCase())
+        );
+        setProductos(productosFiltrados);
+    };
 
     // Agregar un producto
     const handleAgregarProducto = () => {
@@ -44,6 +66,7 @@ const Productos = () => {
             nombre,
             precio: precioNumerico,
             stock: stockNumerico,
+            estado: true,
         };
 
         fetch(`${url}/productos`, {
@@ -56,7 +79,6 @@ const Productos = () => {
             .then((response) => response.text())
             .then((data) => {
                 if (data === 'Producto guardado exitosamente') {
-                    setProductos([...productos, nuevoProducto]);
                     setNombre('');
                     setPrecio('');
                     setStock('');
@@ -69,29 +91,50 @@ const Productos = () => {
             .catch((error) => console.error('Error al agregar producto:', error));
     };
 
-    // Eliminar un producto
-    const handleEliminarProducto = (id) => {
-        fetch(`${url}/productos/${id}`, {
-            method: 'DELETE',
-        })
-            .then((response) => response.text())
-            .then((data) => {
-                if (data === 'Producto eliminado exitosamente') {
-                    setProductos(productos.filter((producto) => producto.id !== id));
-                    toast.success('Producto eliminado exitosamente.');
-                    jalarDatos();
-                } else {
-                    toast.error('Hubo un error al eliminar el producto');
+    // Confirmar eliminación de producto
+    const confirmarEliminarProducto = (producto) => {
+        setProductoAEliminar(producto);
+        setMostrarConfirmacionEliminar(true);
+    };
+
+    // Eliminar producto
+    const handleEliminarProducto = async () => {
+        if (!productoAEliminar) return;
+
+        try {
+            const response = await fetch(`${url}/productos/estado/${productoAEliminar.id}?estado=false`, {
+                method: 'PUT',
+                headers: {
+                    'Content-Type': 'application/json',
                 }
-            })
-            .catch((error) => console.error('Error al eliminar producto:', error));
+            });
+
+            if (!response.ok) {
+                throw new Error('Error en la respuesta del servidor');
+            }
+
+            // Limpiar selección si el producto eliminado estaba seleccionado
+            if (productoSeleccionado && productoSeleccionado.id === productoAEliminar.id) {
+                setProductoSeleccionado(null);
+                setNombreEditar('');
+                setPrecioEditar('');
+                setStockEditar('');
+            }
+            
+            toast.success('Producto eliminado exitosamente');
+            setMostrarConfirmacionEliminar(false);
+            jalarDatos();
+            
+        } catch (error) {
+            console.error('Error al eliminar producto:', error);
+            toast.error('Error al eliminar el producto');
+        }
     };
 
     // Actualizar un producto
     const handleActualizarProducto = () => {
         if (!productoSeleccionado || !nombreEditar || isNaN(parseFloat(precioEditar)) || isNaN(parseInt(stockEditar))) {
             toast.error('Completa los datos correctamente.');
-            
             return;
         }
 
@@ -99,6 +142,7 @@ const Productos = () => {
             nombre: nombreEditar,
             precio: parseFloat(precioEditar),
             stock: parseInt(stockEditar),
+            estado: true,
         };
 
         fetch(`${url}/productos/${productoSeleccionado.id}`, {
@@ -111,9 +155,6 @@ const Productos = () => {
             .then((response) => response.text())
             .then((data) => {
                 if (data === 'Producto actualizado exitosamente') {
-                    setProductos(productos.map((producto) =>
-                        producto.id === productoSeleccionado.id ? { ...productoSeleccionado, ...productoActualizado } : producto
-                    ));
                     setProductoSeleccionado(null);
                     setNombreEditar('');
                     setPrecioEditar('');
@@ -227,6 +268,15 @@ const Productos = () => {
                     </div>
                     <div className="w-full rounded-r-lg bg-secundario p-6">
                         <h2 className="text-lg font-bold mb-4">Listado de Productos</h2>
+                        <div className="mb-4">
+                            <input 
+                                type="text" 
+                                className="w-full px-3 py-2 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
+                                value={busqueda} 
+                                onChange={(e) => handleBuscarProducto(e.target.value)} 
+                                placeholder="Buscar productos por nombre" 
+                            />
+                        </div>
                         <div className="border border-gray-600 rounded-lg max-h-[65vh] overflow-y-auto">
                             <table className="w-full border-collapse">
                                 <thead className="bg-gray-600 h-[40px]">
@@ -239,25 +289,25 @@ const Productos = () => {
                                 </thead>
                                 <tbody>
                                     {productos.map((producto) => (
-                                        <tr key={producto.id} className="border-b-2 border-gray-600">
+                                        <tr key={producto.id} className="border-t border-gray-500">
                                             <td className="px-4 py-2">{producto.nombre}</td>
-                                            <td className="px-4 py-2 text-right">S/ {producto.precio.toFixed(2)}</td>
+                                            <td className="px-4 py-2 text-right">{producto.precio}</td>
                                             <td className="px-4 py-2 text-right">{producto.stock}</td>
                                             <td className="px-4 py-2 text-center">
                                                 <button
                                                     onClick={() => {
                                                         setProductoSeleccionado(producto);
                                                         setNombreEditar(producto.nombre);
-                                                        setPrecioEditar(producto.precio.toString());
-                                                        setStockEditar(producto.stock.toString());
+                                                        setPrecioEditar(producto.precio);
+                                                        setStockEditar(producto.stock);
                                                     }}
-                                                    className="text-[15px] bg-blue-500 bg-opacity-70 text-white px-2 py-1 rounded-md hover:bg-blue-700 mx-1"
+                                                    className="bg-blue-500 bg-opacity-70 text-[14px] text-white px-2 py-1 rounded-md hover:bg-blue-700 mx-1"
                                                 >
                                                     Editar
                                                 </button>
                                                 <button
-                                                    onClick={() => handleEliminarProducto(producto.id)}
-                                                    className=" text-[15px] bg-red-500 bg-opacity-70 text-white px-2 py-1 rounded-md hover:bg-red-700 mx-1"
+                                                    onClick={() => confirmarEliminarProducto(producto)}
+                                                    className="text-[14px] bg-red-500 text-white px-2 bg-opacity-70 py-1 rounded-md hover:bg-red-700 mx-1"
                                                 >
                                                     Eliminar
                                                 </button>
@@ -266,10 +316,39 @@ const Productos = () => {
                                     ))}
                                 </tbody>
                             </table>
+                            {productos.length === 0 && (
+                                <div className="text-center py-4 text-gray-400">
+                                    No se encontraron productos
+                                </div>
+                            )}
                         </div>
                     </div>
                 </div>
             </div>
+
+            {/* Modal de Confirmación de Eliminación */}
+            {mostrarConfirmacionEliminar && (
+            <div className="fixed flex justify-center items-center w-screen h-screen bg-[#000000bc] top-0 left-0 z-[100]">
+                <div className="bg-secundario text-white p-6 rounded-lg shadow-xl">
+                    <h2 className="text-xl font-bold mb-4">Confirmar Eliminación</h2>
+                    <p className="mb-6">¿Estás seguro de que deseas eliminar el producto "{productoAEliminar?.nombre}"?</p>
+                    <div className="flex justify-end space-x-4">
+                        <button 
+                            onClick={() => setMostrarConfirmacionEliminar(false)} 
+                            className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400"
+                        >
+                            Cancelar
+                        </button>
+                        <button 
+                            onClick={handleEliminarProducto} 
+                            className="px-4 py-2 bg-red-500 text-white rounded-md hover:bg-red-600"
+                        >
+                            Eliminar
+                        </button>
+                    </div>
+                </div>
+            </div>
+            )}
         </div>
     );
 };

@@ -33,7 +33,7 @@ const ModalVenta = ({
             return (
                 <div
                     key={item.id}
-                    className="border rounded-lg w-fit border-gray-600 p-4 m-2 cursor-pointer hover:bg-[#00000034] text-[15px]"
+                    className="rounded-lg w-fit border-gray-600 p-4 m-2 cursor-pointer hover:bg-[#00000034] text-[15px]"
                     onClick={() => agregarProducto(itemData)}
                 >
                     <img src={name} alt="platos" className='w-[170px] mb-2 opacity-60' />
@@ -46,10 +46,10 @@ const ModalVenta = ({
     };
 
     return (
-        <div className="fixed flex justify-center items-center w-screen h-screen bg-[#000000bc] top-0 left-0 z-[100]">
-            <div className="bg-secundario p-6 h-[90vh] rounded-lg w-[1200px]">
+        <div className="fixed flex justify-center items-center w-screen h-screen bg-[#000000bc] top-0 left-0 z-[100] p-5">
+            <div className="bg-secundario p-6 w-full h-full rounded-lg">
                 <h2 className="text-lg font-bold mb-4">Gestionar Productos</h2>
-                <div className="flex gap-4 h-[70vh]">
+                <div className="flex gap-4 h-[75vh]">
                     <div className="w-1/2 h-full">
                         <h3 className="text-md font-semibold mb-2">Buscar {seleccionado === 'producto' ? 'Producto' : 'Plato'}</h3>
                         <input
@@ -68,7 +68,7 @@ const ModalVenta = ({
                             <option value="plato">Plato</option>
                         </select>
 
-                        <div className="mt-4 max-h-[54vh] grid grid-cols-3 overflow-y-auto">
+                        <div className="mt-4 max-h-[62vh] grid grid-cols-3 overflow-y-auto">
                             {seleccionado === 'producto'
                                 ? renderTarjetas(productosFiltrados, "./producto.jpg")
                                 : renderTarjetas(platosFiltrados, "./platos_peruanos.jpg")}

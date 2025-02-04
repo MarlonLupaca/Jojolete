@@ -19,6 +19,9 @@ const Inicio = () => {
     const [productosDisponibles, setProductosDisponibles] = useState([]);
     const [platosDisponibles, setPlatosDisponibles] = useState([]);
 
+    const [mostrarConfirmacionVenta, setMostrarConfirmacionVenta] = useState(false);
+    const [mesaParaVenta, setMesaParaVenta] = useState(null);
+
     // Cargar mesas y productos iniciales
     useEffect(() => {
         cargarMesas();
@@ -201,8 +204,11 @@ const Inicio = () => {
         }
     };
 
-    const guardarVenta = async (mesaId) => {
-        const mesa = mesas.find(m => m.id === mesaId);
+    
+    const realizarVentaConfirmada = async () => {
+        if (!mesaParaVenta) return;
+
+        const mesa = mesas.find(m => m.id === mesaParaVenta);
         if (!mesa || mesa.detalles.length === 0) return;
     
         const fecha = new Date().toISOString().split('T')[0];
@@ -253,9 +259,17 @@ const Inicio = () => {
             }
         } catch (error) {
             toast.error('Error al guardar la venta: ' + error.message);
+        } finally {
+            // Reset confirmation modal state
+            setMostrarConfirmacionVenta(false);
+            setMesaParaVenta(null);
         }
     };
 
+    const guardarVenta = (mesaId) => {
+        setMesaParaVenta(mesaId);
+        setMostrarConfirmacionVenta(true);
+    };
     return (
         <div className="bg-primario text-white flex h-screen">
             <Sidebar />
@@ -291,6 +305,32 @@ const Inicio = () => {
                     calcularTotalMesa={calcularTotalMesa}
                     setMostrarModal={setMostrarModal}
                 />
+            )}
+
+            {mostrarConfirmacionVenta && (
+                <div className="fixed flex justify-center items-center w-screen h-screen bg-[#000000bc] top-0 left-0 z-[100]">
+                    <div className="bg-secundario text-white p-6 rounded-lg shadow-xl">
+                        <h2 className="text-xl font-bold mb-4">Confirmar Venta</h2>
+                        <p className="mb-6">¿Estás seguro de que deseas guardar esta venta?</p>
+                        <div className="flex justify-end space-x-4">
+                            <button 
+                                onClick={() => {
+                                    setMostrarConfirmacionVenta(false);
+                                    setMesaParaVenta(null);
+                                }}
+                                className="px-4 py-2 bg-gray-300 text-gray-800 rounded-md hover:bg-gray-400"
+                            >
+                                Cancelar
+                            </button>
+                            <button
+                                onClick={realizarVentaConfirmada}
+                                className="px-4 py-2 bg-green-500 text-white rounded-md hover:bg-green-600"
+                            >
+                                Confirmar
+                            </button>
+                        </div>
+                    </div>
+                </div>
             )}
         </div>
     );

@@ -21,6 +21,7 @@
     "@electron-toolkit/preload": "3.0.1",
     "@electron-toolkit/utils": "3.0.0",
     "@headlessui/react": "^2.2.0",
+    "@stomp/stompjs": "^7.0.0",
     "axios": "^1.7.9",
     "electron-updater": "^6.3.9",
     "exceljs": "^4.4.0",
