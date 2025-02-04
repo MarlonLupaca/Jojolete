@@ -1,4 +1,4 @@
-
+// SeccionMesas.jsx
 import React from 'react';
 
 const SeccionMesas = ({ setMesaSeleccionada, agregarMesa, eliminarMesa, mesas }) => {
@@ -10,13 +10,13 @@ const SeccionMesas = ({ setMesaSeleccionada, agregarMesa, eliminarMesa, mesas })
                     <div
                         key={mesa.id}
                         className={`p-4 rounded-md text-center cursor-pointer transition-transform transform hover:scale-105 ${
-                            mesa.estado === 'Ocupada'
+                            mesa.detalles.length > 0
                                 ? 'bg-cuarto bg-opacity-70 hover:bg-red-700 text-white'
                                 : 'bg-sexto bg-opacity-70 hover:bg-green-700 text-white'
                         }`}
                         onClick={() => setMesaSeleccionada(mesa)}
                     >
-                        <h3 className="text-sm font-semibold">{mesa.numero}</h3>
+                        <h3 className="text-sm font-semibold">{mesa.nombre}</h3>
                     </div>
                 ))}
             </div>

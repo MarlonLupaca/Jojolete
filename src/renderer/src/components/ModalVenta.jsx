@@ -22,18 +22,27 @@ const ModalVenta = ({
     );
 
     const renderTarjetas = (items, name) => {
-        return items.map((item) => (
-            <div
-                key={item.id}
-                className="border rounded-lg w-fit border-gray-600 p-4 m-2 cursor-pointer hover:bg-[#00000034] text-[15px]"
-                onClick={() => agregarProducto(item)}
-            >
-                <img src={name} alt="platos" className='w-[170px] mb-2 opacity-60' />
-                <h4 className="font-semibold">{item.nombre}</h4>
-                <p>Precio: S/ {item.precio.toFixed(2)}</p>
-                {item.stock && <p>Stock: {item.stock}</p>}
-            </div>
-        ));
+        return items.map((item) => {
+            const itemData = {
+                id: item.id,
+                nombre: item.nombre,
+                precio: item.precio,
+                tipo: seleccionado // agregamos el tipo para diferenciar entre producto y plato
+            };
+
+            return (
+                <div
+                    key={item.id}
+                    className="border rounded-lg w-fit border-gray-600 p-4 m-2 cursor-pointer hover:bg-[#00000034] text-[15px]"
+                    onClick={() => agregarProducto(itemData)}
+                >
+                    <img src={name} alt="platos" className='w-[170px] mb-2 opacity-60' />
+                    <h4 className="font-semibold">{item.nombre}</h4>
+                    <p>Precio: S/ {item.precio.toFixed(2)}</p>
+                    {item.stock && <p>Stock: {item.stock}</p>}
+                </div>
+            );
+        });
     };
 
     return (
@@ -79,21 +88,27 @@ const ModalVenta = ({
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    {mesaSeleccionada.detalles.map((detalle, index) => (
-                                        <tr key={index} className="border-b border-gray-600">
-                                            <td className="px-4 py-2">{detalle.nombre}</td>
+                                    {mesaSeleccionada.detalles.map((detalle) => (
+                                        <tr key={detalle.id} className="border-b border-gray-600">
+                                            <td className="px-4 py-2">
+                                                {detalle.producto?.nombre || detalle.plato?.nombre}
+                                            </td>
                                             <td className="px-4 py-2 text-center">
                                                 <input
                                                     type="number"
                                                     className="w-[64px] text-[14px] px-3 py-1 bg-gray-700 border border-gray-600 rounded-md focus:outline-none focus:border-blue-500"
                                                     min="1"
                                                     value={detalle.cantidad}
-                                                    onChange={(e) => actualizarCantidad(index, parseInt(e.target.value, 10))}
+                                                    onChange={(e) => 
+                                                        actualizarCantidad(detalle.id, parseInt(e.target.value, 10))
+                                                    }
                                                 />
                                             </td>
-                                            <td className="px-4 py-2 text-right">S/ {detalle.precio.toFixed(2)}</td>
                                             <td className="px-4 py-2 text-right">
-                                                S/ {(detalle.precio * detalle.cantidad).toFixed(2)}
+                                                S/ {(detalle.producto?.precio || detalle.plato?.precio).toFixed(2)}
+                                            </td>
+                                            <td className="px-4 py-2 text-right">
+                                                S/ {detalle.subtotal.toFixed(2)}
                                             </td>
                                         </tr>
                                     ))}

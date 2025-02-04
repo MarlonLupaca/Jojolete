@@ -14,7 +14,7 @@ const DetalleMesas = ({
             {mesaSeleccionada ? (
                 <>
                     <div className="flex justify-between items-center mb-4">
-                        <h2 className="text-lg font-bold">{mesaSeleccionada.numero}</h2>
+                        <h2 className="text-lg font-bold">{mesaSeleccionada.nombre}</h2>
                         <div className="space-x-2">
                             <button
                                 onClick={() => setMostrarModal(true)}
@@ -45,9 +45,11 @@ const DetalleMesas = ({
                                 </tr>
                             </thead>
                             <tbody>
-                                {mesaSeleccionada.detalles.map((detalle, index) => (
-                                    <tr key={index} className="border-b-2 border-gray-600 h-[50px]">
-                                        <td className="px-4 py-2">{detalle.nombre}</td>
+                                {mesaSeleccionada.detalles.map((detalle) => (
+                                    <tr key={detalle.id} className="border-b-2 border-gray-600 h-[50px]">
+                                        <td className="px-4 py-2">
+                                            {detalle.producto?.nombre || detalle.plato?.nombre}
+                                        </td>
                                         <td className="px-4 py-2 text-center">
                                             <input
                                                 type="number"
@@ -55,17 +57,19 @@ const DetalleMesas = ({
                                                 min="1"
                                                 value={detalle.cantidad}
                                                 onChange={(e) =>
-                                                    actualizarCantidad(index, parseInt(e.target.value, 10))
+                                                    actualizarCantidad(detalle.id, parseInt(e.target.value, 10))
                                                 }
                                             />
                                         </td>
-                                        <td className="px-4 py-2 text-right">S/ {detalle.precio.toFixed(2)}</td>
                                         <td className="px-4 py-2 text-right">
-                                            S/ {(detalle.precio * detalle.cantidad).toFixed(2)}
+                                            S/ {(detalle.producto?.precio || detalle.plato?.precio).toFixed(2)}
+                                        </td>
+                                        <td className="px-4 py-2 text-right">
+                                            S/ {detalle.subtotal.toFixed(2)}
                                         </td>
                                         <td className="px-4 py-2 text-center">
                                             <button
-                                                onClick={() => eliminarProducto(index)}
+                                                onClick={() => eliminarProducto(detalle.id)}
                                                 className="text-red-500 hover:text-red-700 transition-colors duration-200"
                                                 title="Eliminar producto"
                                             >

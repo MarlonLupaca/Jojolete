@@ -5,203 +5,224 @@ import SeccionMesas from '../components/SeccionMesas';
 import DetalleMesas from '../components/DetalleMesas';
 import ModalVenta from '../components/ModalVenta';
 import { toast } from 'react-toastify';
-import { UserContext } from '../components/UserContext.jsx'; 
-import config from '../components/config'
+import { UserContext } from '../components/UserContext.jsx';
+import config from '../components/config';
 
 const Inicio = () => {
-
-    const url = config.API_URL
-
+    const url = config.API_URL;
     const { user } = useContext(UserContext);
 
-    const [mesas, setMesas] = useState(() => {
-        const mesasGuardadas = localStorage.getItem('mesas');
-        return mesasGuardadas ? JSON.parse(mesasGuardadas) : [
-            {
-                id: 1,
-                numero: 'Mesa 1',
-                estado: 'Disponible',
-                detalles: []
-            },
-            {
-                id: 2,
-                numero: 'Mesa 2',
-                estado: 'Disponible',
-                detalles: []
-            },
-            {
-                id: 3,
-                numero: 'Mesa 3',
-                estado: 'Disponible',
-                detalles: []
-            },
-            {
-                id: 4,
-                numero: 'Mesa 4',
-                estado: 'Disponible',
-                detalles: []
-            },
-        ];
-    });
-
+    const [mesas, setMesas] = useState([]);
     const [mesaSeleccionada, setMesaSeleccionada] = useState(null);
     const [mostrarModal, setMostrarModal] = useState(false);
     const [buscadorProducto, setBuscadorProducto] = useState('');
     const [productosDisponibles, setProductosDisponibles] = useState([]);
     const [platosDisponibles, setPlatosDisponibles] = useState([]);
 
+    // Cargar mesas y productos iniciales
     useEffect(() => {
-        localStorage.setItem('mesas', JSON.stringify(mesas));
-    }, [mesas]);
-
-    useEffect(() => {
-        fetch(`${url}/productos`)
-            .then((response) => response.json())
-            .then((data) => setProductosDisponibles(data));
-
-        fetch(`${url}/platos`)
-            .then((response) => response.json())
-            .then((data) => setPlatosDisponibles(data));
+        cargarMesas();
+        cargarProductos();
     }, []);
 
+    const cargarMesas = async () => {
+        try {
+            const response = await fetch(`${url}/api/mesas`);
+            const data = await response.json();
+            setMesas(data);
+        } catch (error) {
+            toast.error('Error al cargar las mesas');
+        }
+    };
+
+    const cargarProductos = async () => {
+        try {
+            const [productosResponse, platosResponse] = await Promise.all([
+                fetch(`${url}/productos`),
+                fetch(`${url}/platos`)
+            ]);
+            const productos = await productosResponse.json();
+            const platos = await platosResponse.json();
+            setProductosDisponibles(productos);
+            setPlatosDisponibles(platos);
+        } catch (error) {
+            toast.error('Error al cargar productos y platos');
+        }
+    };
+
     const calcularTotalMesa = (detalles) =>
-        detalles.reduce((total, item) => total + item.precio * item.cantidad, 0);
+        detalles.reduce((total, item) => total + item.subtotal, 0);
 
-    const agregarProducto = (producto) => {
+    
+    const agregarProducto = async (producto) => {
         if (!mesaSeleccionada) return;
-
-        setMesaSeleccionada((prevMesa) => {
-            const productoExistente = prevMesa.detalles.find(
-                (detalle) => detalle.nombre === producto.nombre
-            );
-
-            const nuevaMesa = productoExistente
-                ? {
-                    ...prevMesa,
-                    estado: 'Ocupada',
-                    detalles: prevMesa.detalles.map((detalle) =>
-                        detalle.nombre === producto.nombre
-                            ? { ...detalle, cantidad: detalle.cantidad + 1 }
-                            : detalle
-                    )
+    
+        // Verificar si el producto ya existe en la mesa
+        const detalleExistente = mesaSeleccionada.detalles.find(detalle => 
+            (producto.tipo === 'producto' && detalle.producto?.id === producto.id) ||
+            (producto.tipo === 'plato' && detalle.plato?.id === producto.id)
+        );
+    
+        if (detalleExistente) {
+            // Actualizar cantidad usando el nuevo endpoint
+            try {
+                const response = await fetch(`${url}/api/mesas/detalles/${detalleExistente.id}/${detalleExistente.cantidad + 1}`, {
+                    method: 'PUT'
+                });
+    
+                if (response.ok) {
+                    const mesaResponse = await fetch(`${url}/api/mesas/${mesaSeleccionada.nombre}`);
+                    const mesaActualizada = await mesaResponse.json();
+                    
+                    setMesaSeleccionada(mesaActualizada);
+                    setMesas(prevMesas => prevMesas.map(mesa => 
+                        mesa.nombre === mesaSeleccionada.nombre ? mesaActualizada : mesa
+                    ));
                 }
-                : {
-                    ...prevMesa,
-                    estado: 'Ocupada',
-                    detalles: [
-                        ...prevMesa.detalles,
-                        { nombre: producto.nombre, precio: producto.precio, cantidad: 1 }
-                    ]
-                };
-
-            setMesas(prevMesas =>
-                prevMesas.map(mesa =>
-                    mesa.id === prevMesa.id ? nuevaMesa : mesa
-                )
-            );
-
-            return nuevaMesa;
-        });
-    };
-
-    const actualizarCantidad = (index, nuevaCantidad) => {
-        if (!mesaSeleccionada || nuevaCantidad < 1) return;
-
-        setMesaSeleccionada((prevMesa) => {
-            const nuevosDetalles = [...prevMesa.detalles];
-            nuevosDetalles[index].cantidad = nuevaCantidad;
-
-            const nuevaMesa = {
-                ...prevMesa,
-                detalles: nuevosDetalles
+            } catch (error) {
+                toast.error('Error al actualizar la cantidad del producto');
+            }
+        } else {
+            // Si no existe, crear nuevo detalle (esto se mantiene igual)
+            const detalle = {
+                platoId: producto.tipo === 'plato' ? producto.id : null,
+                productoId: producto.tipo === 'producto' ? producto.id : null,
+                cantidad: 1,
+                subtotal: producto.precio
             };
-
-            setMesas(prevMesas =>
-                prevMesas.map(mesa =>
-                    mesa.id === prevMesa.id ? nuevaMesa : mesa
-                )
-            );
-
-            return nuevaMesa;
-        });
+    
+            try {
+                const response = await fetch(`${url}/api/mesas/${mesaSeleccionada.nombre}/detalles`, {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(detalle)
+                });
+    
+                if (response.ok) {
+                    const mesaResponse = await fetch(`${url}/api/mesas/${mesaSeleccionada.nombre}`);
+                    const mesaActualizada = await mesaResponse.json();
+                    
+                    setMesaSeleccionada(mesaActualizada);
+                    setMesas(prevMesas => prevMesas.map(mesa => 
+                        mesa.nombre === mesaSeleccionada.nombre ? mesaActualizada : mesa
+                    ));
+                }
+            } catch (error) {
+                toast.error('Error al agregar el producto');
+            }
+        }
     };
 
-    const eliminarProducto = (index) => {
+    const actualizarCantidad = async (detalleId, nuevaCantidad) => {
+        if (!mesaSeleccionada || nuevaCantidad < 1) return;
+    
+        try {
+            // Usar el nuevo endpoint para actualizar la cantidad
+            const response = await fetch(`${url}/api/mesas/detalles/${detalleId}/${nuevaCantidad}`, {
+                method: 'PUT'
+            });
+    
+            if (response.ok) {
+                const mesaResponse = await fetch(`${url}/api/mesas/${mesaSeleccionada.nombre}`);
+                const mesaActualizada = await mesaResponse.json();
+                
+                setMesaSeleccionada(mesaActualizada);
+                setMesas(prevMesas => prevMesas.map(mesa => 
+                    mesa.nombre === mesaSeleccionada.nombre ? mesaActualizada : mesa
+                ));
+            }
+        } catch (error) {
+            toast.error('Error al actualizar la cantidad');
+        }
+    };
+
+    const eliminarProducto = async (detalleId) => {
         if (!mesaSeleccionada) return;
 
-        setMesaSeleccionada((prevMesa) => {
-            const nuevosDetalles = prevMesa.detalles.filter((_, i) => i !== index);
+        try {
+            await fetch(`${url}/api/mesas/detalles/${detalleId}`, {
+                method: 'DELETE'
+            });
+
+            const mesaResponse = await fetch(`${url}/api/mesas/${mesaSeleccionada.nombre}`);
+            const mesaActualizada = await mesaResponse.json();
             
-            const nuevaMesa = {
-                ...prevMesa,
-                estado: nuevosDetalles.length === 0 ? 'Disponible' : 'Ocupada',
-                detalles: nuevosDetalles
-            };
-
-            setMesas(prevMesas =>
-                prevMesas.map(mesa =>
-                    mesa.id === prevMesa.id ? nuevaMesa : mesa
-                )
-            );
-
-            return nuevaMesa;
-        });
+            setMesaSeleccionada(mesaActualizada);
+            setMesas(prevMesas => prevMesas.map(mesa => 
+                mesa.nombre === mesaSeleccionada.nombre ? mesaActualizada : mesa
+            ));
+        } catch (error) {
+            toast.error('Error al eliminar el producto');
+        }
     };
 
-    const agregarMesa = () => {
-        const maxNumero = mesas.length > 0
-            ? Math.max(...mesas.map((mesa) => parseInt(mesa.numero.replace('Mesa ', ''), 10)))
-            : 0;
-
+    const agregarMesa = async () => {
         const nuevaMesa = {
-            id: mesas.length + 1,
-            numero: `Mesa ${maxNumero + 1}`,
-            estado: 'Disponible',
-            detalles: []
+            nombre: `mesa ${mesas.length + 1}`,
+            estado: 'disponible'
         };
 
-        setMesas([...mesas, nuevaMesa]);
+        try {
+            const response = await fetch(`${url}/api/mesas`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(nuevaMesa)
+            });
+
+            if (response.ok) {
+                cargarMesas(); // Recargar todas las mesas
+            }
+        } catch (error) {
+            toast.error('Error al agregar la mesa');
+        }
     };
 
-    const eliminarMesa = () => {
+    const eliminarMesa = async () => {
         if (mesas.length === 0) return;
 
         const ultimaMesa = mesas[mesas.length - 1];
         
-        if (mesaSeleccionada && mesaSeleccionada.id === ultimaMesa.id) {
-            setMesaSeleccionada(null);
-        }
+        try {
+            await fetch(`${url}/api/mesas/${ultimaMesa.nombre}`, {
+                method: 'DELETE'
+            });
 
-        setMesas(prevMesas => prevMesas.slice(0, -1));
+            if (mesaSeleccionada && mesaSeleccionada.nombre === ultimaMesa.nombre) {
+                setMesaSeleccionada(null);
+            }
+
+            cargarMesas(); // Recargar todas las mesas
+        } catch (error) {
+            toast.error('Error al eliminar la mesa');
+        }
     };
 
     const guardarVenta = async (mesaId) => {
         const mesa = mesas.find(m => m.id === mesaId);
         if (!mesa || mesa.detalles.length === 0) return;
-
+    
         const fecha = new Date().toISOString().split('T')[0];
         const total = calcularTotalMesa(mesa.detalles);
-        const mesera = user.nombres + " " + user.apellidos
-
-        const detallesVenta = mesa.detalles.map(detalle => {
-            const productoEncontrado = productosDisponibles.find(p => p.nombre === detalle.nombre);
-            const platoEncontrado = platosDisponibles.find(p => p.nombre === detalle.nombre);
-
-            return {
-                cantidad: detalle.cantidad,
-                subtotal: detalle.precio * detalle.cantidad,
-                producto: productoEncontrado ? { id: productoEncontrado.id } : null,
-                plato: platoEncontrado ? { id: platoEncontrado.id } : null
-            };
-        });
-
+        const mesera = user.nombres + " " + user.apellidos;
+    
+        const detallesVenta = mesa.detalles.map(detalle => ({
+            cantidad: detalle.cantidad,
+            subtotal: detalle.subtotal,
+            producto: detalle.producto ? { id: detalle.producto.id } : null,
+            plato: detalle.plato ? { id: detalle.plato.id } : null
+        }));
+    
         const ventaData = {
             fecha,
             total,
             mesera,
             detalles: detallesVenta
         };
-
+    
         try {
             const response = await fetch(`${url}/api/ventas`, {
                 method: 'POST',
@@ -210,22 +231,28 @@ const Inicio = () => {
                 },
                 body: JSON.stringify(ventaData)
             });
-
+    
             if (response.ok) {
-                setMesas(prevMesas => 
-                    prevMesas.map(m => 
-                        m.id === mesaId 
-                            ? { ...m, estado: 'Disponible', detalles: [] }
-                            : m
-                    )
-                );
+                // Eliminar los detalles de la mesa
+                await fetch(`${url}/api/mesas/${mesa.nombre}/detalles`, {
+                    method: 'DELETE'
+                });
+    
+                // Recargar la mesa para reflejar los cambios
+                const mesaResponse = await fetch(`${url}/api/mesas/${mesa.nombre}`);
+                const mesaActualizada = await mesaResponse.json();
+                
                 setMesaSeleccionada(null);
-                alert('Venta guardada exitosamente');
+                setMesas(prevMesas => prevMesas.map(m => 
+                    m.nombre === mesa.nombre ? mesaActualizada : m
+                ));
+                
+                toast.success('Venta guardada exitosamente');
             } else {
-                toast.error("No hay stock")
+                toast.error("No hay stock");
             }
         } catch (error) {
-            alert('Error al guardar la venta: ' + error.message);
+            toast.error('Error al guardar la venta: ' + error.message);
         }
     };
 
@@ -241,7 +268,6 @@ const Inicio = () => {
                         agregarMesa={agregarMesa} 
                         eliminarMesa={eliminarMesa}
                     />
-
                     <DetalleMesas 
                         mesaSeleccionada={mesaSeleccionada} 
                         setMostrarModal={setMostrarModal}
